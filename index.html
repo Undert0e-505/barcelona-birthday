@@ -333,7 +333,7 @@
 </div>
 
 <div class="results-link-section hidden" id="resultsSection">
-    <a href="results.html" class="results-link-btn">📊 See Everyone's Results →</a>
+    <a href="results.html" class="results-link-btn" id="resultsLink">📊 See Everyone's Results →</a>
 </div>
 
 <script>
@@ -444,6 +444,7 @@ function showVotingUI() {
     document.getElementById('itemsList').classList.remove('hidden');
     document.getElementById('addSection').classList.remove('hidden');
     document.getElementById('resultsSection').classList.remove('hidden');
+    document.getElementById('resultsLink').href = `results.html?v=${currentCode}`;
 
     setupNav();
     renderItems();
@@ -545,7 +546,7 @@ function addItem() {
     const cat = document.getElementById('newItemCategory').value;
     if (!name) return;
     const id = 'custom_' + name.toLowerCase().replace(/[^a-z0-9]/g,'_') + '_' + Date.now();
-    const item = { id, name, desc: 'Added to the list!', cat, img: 'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=400&h=300&fit=crop', link: '#' };
+    const item = { id, name, desc: 'Added to the list!', cat, img: 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&h=300&fit=crop', link: `https://maps.google.com/?q=${encodeURIComponent(name + ' Barcelona')}` };
     customItems.push(item);
     localStorage.setItem('bcn_custom', JSON.stringify(customItems));
     document.getElementById('newItemName').value = '';

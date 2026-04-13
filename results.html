@@ -301,7 +301,11 @@ function renderResults(allVotes) {
     }
 
     tableHtml += '</tbody></table></div>';
-    tableHtml += `<div style="text-align:center"><a href="index.html" class="back-link">← Back to Voting</a></div>`;
+    tableHtml += `<div style="text-align:center; margin-top:1rem;">`;
+    tableHtml += `<a href="index.html?v=x7kQm9pW" class="back-link" style="margin:0 0.5rem;">Aaron's Votes</a>`;
+    tableHtml += `<a href="index.html?v=z3nRb8tY" class="back-link" style="margin:0 0.5rem;">Will's Votes</a>`;
+    tableHtml += `<a href="index.html?v=f5mJd2wA" class="back-link" style="margin:0 0.5rem;">Matt's Votes</a>`;
+    tableHtml += `</div>`;
 
     container.innerHTML = summaryHtml + tableHtml;
 }
