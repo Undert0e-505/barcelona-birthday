@@ -236,7 +236,7 @@ async function loadVotes() {
     await Promise.all(codes.map(async code => {
         const person = VOTER_CODES[code];
         try {
-            const res = await fetch(`${KVDB_BASE}/${BIN_IDS[code]}/votes`);
+            const res = await fetch(`${KVDB_BASE}/${BIN_IDS[code]}/votes?_=${Date.now()}`);
             allVotes[person] = res.ok ? await res.json() : {};
         } catch(e) {
             allVotes[person] = {};
