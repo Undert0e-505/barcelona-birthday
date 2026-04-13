@@ -321,14 +321,14 @@
 
 <div class="add-section hidden" id="addSection">
     <div class="add-card">
-        <input type="text" id="newItemName" placeholder="Add something new...">
+        <input type="text" id="newItemName" placeholder="Suggest an activity...">
         <select id="newItemCategory">
             <option value="sights">🏛️ Sights</option>
             <option value="activities">🎯 Activities</option>
             <option value="food">🍽️ Food</option>
             <option value="beach">🏖️ Beach</option>
         </select>
-        <button class="add-btn" onclick="addItem()">+ Add to List</button>
+        <button class="add-btn" onclick="suggestItem()">📧 Suggest It</button>
     </div>
 </div>
 
@@ -397,7 +397,7 @@ let currentCode = null;
 let currentPerson = null;
 let currentCategory = 'all';
 let votes = {};
-let customItems = [];
+// customItems removed — suggestions go via email now
 let saveTimeout = null;
 
 // ── Init ──
@@ -413,8 +413,7 @@ function init() {
         return;
     }
 
-    const stored = localStorage.getItem('bcn_custom');
-    if (stored) { try { customItems = JSON.parse(stored); } catch(e) {} }
+
 
     const storedVotes = localStorage.getItem('bcn_votes_' + currentPerson);
     if (storedVotes) { try { votes = JSON.parse(storedVotes); } catch(e) {} }
@@ -501,7 +500,7 @@ function setupNav() {
 
 // ── Render items ──
 function renderItems() {
-    const allItems = [...ITEMS, ...customItems];
+    const allItems = [...ITEMS];
     const filtered = currentCategory === 'all' ? allItems : allItems.filter(i => i.cat === currentCategory);
     const cats = currentCategory === 'all' ? ['sights','activities','food','beach'] : [currentCategory];
     const catLabels = { sights:'🏛️ Sights & Landmarks', activities:'🎯 Activities & Experiences', food:'🍽️ Food & Drink', beach:'🏖️ Beach' };
@@ -540,18 +539,17 @@ function vote(itemId, val) {
     saveToBin();
 }
 
-// ── Add item ──
-function addItem() {
+// ── Suggest item (sends email) ──
+function suggestItem() {
     const name = document.getElementById('newItemName').value.trim();
-    const cat = document.getElementById('newItemCategory').value;
     if (!name) return;
-    const id = 'custom_' + name.toLowerCase().replace(/[^a-z0-9]/g,'_') + '_' + Date.now();
-    const item = { id, name, desc: 'Added to the list!', cat, img: 'img/barceloneta.jpg', link: `https://maps.google.com/?q=${encodeURIComponent(name + ' Barcelona')}` };
-    customItems.push(item);
-    localStorage.setItem('bcn_custom', JSON.stringify(customItems));
+    const cat = document.getElementById('newItemCategory');
+    const catLabel = cat.options[cat.selectedIndex].text;
+    const person = currentPerson ? currentPerson.charAt(0).toUpperCase() + currentPerson.slice(1) : 'Someone';
+    const subject = encodeURIComponent(`Barcelona suggestion: ${name}`);
+    const body = encodeURIComponent(`Hey Jimothy,\n\n${person} suggested: ${name}\nCategory: ${catLabel}\n\nIf it's good, add it to the list!\n\n- Barcelona Birthday Planner`);
+    window.location.href = `mailto:JimothyOakley55@gmail.com?subject=${subject}&body=${body}`;
     document.getElementById('newItemName').value = '';
-    renderItems();
-    saveToBin();
 }
 
 // ── jsonbin backend ──
