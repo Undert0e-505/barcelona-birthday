@@ -6,7 +6,6 @@
     <title>📊 Barcelona Results</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script>const GITHUB_TOKEN=atob("Z2l0aHViX3BhdF8xMUJUUk83SUEwY2lvelZNUjZIRWFPX2d0OHZTOWpWVWFLNGJxaUd5cHozRURxaGVaUkg1d0hFNThMNTJFZjlQVUNFSTc3RUNZV3dPQXA3cTFm");const GITHUB_REPO="Undert0e-505/barcelona-birthday";const GITHUB_BRANCH="main";</script>
     <style>
         :root {
             --aaron: #4285f4;
@@ -155,13 +154,15 @@
 <div id="content" class="results-wrap">
     <div class="loading">
         <div class="spinner"></div>
-        <div>Loading votes from GitHub...</div>
+        <div>Loading votes...</div>
     </div>
 </div>
 
 <script>
 const PERSONS = ['aaron', 'will', 'matt'];
-const PERSON_COLORS = { aaron: '#4285f4', will: '#34a853', matt: '#ea4335' };
+
+const JSONBIN_BASE = 'https://jsonbin-zeta.vercel.app/api/bins';
+const BIN_IDS = { aaron: 'tBhZlaNHUh', will: 'oADjd-XS7X', matt: 'o-zspTcEWJ' };
 
 const ALL_ITEMS = [
     { id:'sagrada', name:'La Sagrada Família', cat:'sights' },
@@ -197,25 +198,17 @@ const CAT_LABELS = { sights: '🏛️ Sights', activities: '🎯 Activities', fo
 
 async function loadVotes() {
     const allVotes = {};
-    let loaded = 0;
 
-    for (const person of PERSONS) {
+    await Promise.all(PERSONS.map(async person => {
         try {
-            const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/votes/${person}.json?ref=${GITHUB_BRANCH}`, {
-                headers: { 'Accept': 'application/vnd.github.raw+json' }
-            });
-            if (res.ok) {
-                allVotes[person] = await res.json();
-            } else {
-                allVotes[person] = {};
-            }
+            const res = await fetch(`${JSONBIN_BASE}/${BIN_IDS[person]}`);
+            allVotes[person] = res.ok ? await res.json() : {};
         } catch(e) {
             allVotes[person] = {};
         }
-        loaded++;
-    }
+    }));
 
-    // Also check for any custom items in each person's votes
+    // Auto-discover custom items from votes
     const allItemIds = new Set(ALL_ITEMS.map(i => i.id));
     for (const person of PERSONS) {
         for (const key of Object.keys(allVotes[person])) {
@@ -239,7 +232,6 @@ function scoreVote(v) {
 function renderResults(allVotes) {
     const container = document.getElementById('content');
 
-    // Summary cards
     let summaryHtml = '<div class="summary-cards">';
     for (const person of PERSONS) {
         const v = allVotes[person] || {};
@@ -253,7 +245,6 @@ function renderResults(allVotes) {
     }
     summaryHtml += '</div>';
 
-    // Build table grouped by category
     let tableHtml = '<div class="results-table-wrap"><table class="results-table"><thead><tr>';
     tableHtml += '<th>Activity</th>';
     for (const person of PERSONS) {
@@ -267,7 +258,6 @@ function renderResults(allVotes) {
 
         tableHtml += `<tr class="cat-row"><td colspan="${PERSONS.length + 2}">${CAT_LABELS[cat]}</td></tr>`;
 
-        // Score and sort within category
         const scored = catItems.map(item => {
             let score = 0;
             const row = {};

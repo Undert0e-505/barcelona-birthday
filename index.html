@@ -6,7 +6,6 @@
     <title>🎂 Barcelona Birthday Planner</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script>const GITHUB_TOKEN=atob("Z2l0aHViX3BhdF8xMUJUUk83SUEwY2lvelZNUjZIRWFPX2d0OHZTOWpWVWFLNGJxaUd5cHozRURxaGVaUkg1d0hFNThMNTJFZjlQVUNFSTc3RUNZV3dPQXA3cTFm");const GITHUB_REPO="Undert0e-505/barcelona-birthday";const GITHUB_BRANCH="main";</script>
     <style>
         :root {
             --aaron: #4285f4;
@@ -340,6 +339,9 @@
 const PERSONS = ['aaron', 'will', 'matt'];
 const PERSON_COLORS = { aaron: '#4285f4', will: '#34a853', matt: '#ea4335' };
 
+const JSONBIN_BASE = 'https://jsonbin-zeta.vercel.app/api/bins';
+const BIN_IDS = { aaron: 'tBhZlaNHUh', will: 'oADjd-XS7X', matt: 'o-zspTcEWJ' };
+
 const ITEMS = [
     { id:'sagrada', name:'La Sagrada Família', desc:'Gaudí\'s jaw-dropping unfinished cathedral. Book ahead or you\'ll be queuing for hours.', cat:'sights', img:'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=400&h=300&fit=crop', link:'https://www.sagradafamilia.org/en/' },
     { id:'parkguell', name:'Park Güell', desc:'Gaudí\'s rainbow mosaic park overlooking the whole city. The gingerbread houses at the entrance are iconic.', cat:'sights', img:'https://images.unsplash.com/photo-1464790719320-3ad757b27937?w=400&h=300&fit=crop', link:'https://www.parkguell.barcelona/en/' },
@@ -383,25 +385,22 @@ let currentCategory = 'all';
 let votes = {};
 let customItems = [];
 let saveTimeout = null;
-let shaMap = {};
 
 // ── Init ──
 function init() {
     const params = new URLSearchParams(window.location.search);
     currentPerson = params.get('who');
-    
-    // Load custom items from localStorage
+
     const stored = localStorage.getItem('bcn_custom');
     if (stored) { try { customItems = JSON.parse(stored); } catch(e) {} }
-    
-    // Load votes from localStorage
+
     if (currentPerson) {
         const storedVotes = localStorage.getItem('bcn_votes_' + currentPerson);
         if (storedVotes) { try { votes = JSON.parse(storedVotes); } catch(e) {} }
         renderPersonSelection();
-        loadSHAFromGitHub();
+        loadFromBin();
     }
-    
+
     setupCarousel();
     setupNav();
     renderItems();
@@ -445,12 +444,13 @@ function setPerson(person) {
     const url = new URL(window.location);
     url.searchParams.set('who', person);
     window.history.replaceState({}, '', url);
-    
+
+    votes = {};
     const storedVotes = localStorage.getItem('bcn_votes_' + currentPerson);
     if (storedVotes) { try { votes = JSON.parse(storedVotes); } catch(e) {} }
-    
+
     renderPersonSelection();
-    loadSHAFromGitHub();
+    loadFromBin();
     renderItems();
 }
 
@@ -467,7 +467,7 @@ function renderItems() {
     const filtered = currentCategory === 'all' ? allItems : allItems.filter(i => i.cat === currentCategory);
     const cats = currentCategory === 'all' ? ['sights','activities','food','beach'] : [currentCategory];
     const catLabels = { sights:'🏛️ Sights & Landmarks', activities:'🎯 Activities & Experiences', food:'🍽️ Food & Drink', beach:'🏖️ Beach' };
-    
+
     let html = '';
     cats.forEach(cat => {
         const catItems = filtered.filter(i => i.cat === cat);
@@ -495,12 +495,12 @@ function renderItems() {
 }
 
 // ── Vote ──
-function vote(itemId, vote) {
+function vote(itemId, val) {
     if (!currentPerson) { alert('Pick who you are first!'); return; }
-    votes[itemId] = votes[itemId] === vote ? '' : vote;
+    votes[itemId] = votes[itemId] === val ? '' : val;
     localStorage.setItem('bcn_votes_' + currentPerson, JSON.stringify(votes));
     renderItems();
-    saveToGitHub();
+    saveToBin();
 }
 
 // ── Add item ──
@@ -514,62 +514,46 @@ function addItem() {
     localStorage.setItem('bcn_custom', JSON.stringify(customItems));
     document.getElementById('newItemName').value = '';
     renderItems();
-    saveToGitHub();
+    saveToBin();
 }
 
-// ── GitHub backend ──
-async function loadSHAFromGitHub() {
-    if (typeof GITHUB_TOKEN === 'undefined' || GITHUB_TOKEN === 'PLACEHOLDER_PUT_YOUR_TOKEN_HERE') return;
+// ── jsonbin backend ──
+async function loadFromBin() {
+    const binId = BIN_IDS[currentPerson];
+    if (!binId) return;
     try {
-        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/votes/${currentPerson}.json?ref=${GITHUB_BRANCH}`, {
-            headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json' }
-        });
+        const res = await fetch(`${JSONBIN_BASE}/${binId}`);
         if (res.ok) {
-            const data = await res.json();
-            shaMap[currentPerson] = data.sha;
-            const content = JSON.parse(atob(data.content));
-            // Merge: GitHub wins for existing items, localStorage wins for newer local changes
-            votes = { ...votes, ...content };
+            const remote = await res.json();
+            // Remote wins for existing keys, local wins for keys not yet on remote
+            votes = { ...votes, ...remote };
             localStorage.setItem('bcn_votes_' + currentPerson, JSON.stringify(votes));
             renderItems();
         }
-    } catch(e) { console.log('Load SHA failed:', e); }
+    } catch(e) { console.log('Load from bin failed:', e); }
 }
 
-async function saveToGitHub() {
-    if (typeof GITHUB_TOKEN === 'undefined' || GITHUB_TOKEN === 'PLACEHOLDER_PUT_YOUR_TOKEN_HERE') {
-        document.getElementById('saveStatus').textContent = '💾 Saved locally (add GitHub token to config.js to sync)';
-        document.getElementById('saveStatus').className = 'save-status saved';
-        return;
-    }
-    
+async function saveToBin() {
+    const binId = BIN_IDS[currentPerson];
+    if (!binId) return;
+
     clearTimeout(saveTimeout);
     document.getElementById('saveStatus').textContent = '⏳ Saving...';
     document.getElementById('saveStatus').className = 'save-status saving';
-    
+
     saveTimeout = setTimeout(async () => {
         try {
-            const body = {
-                message: `Update votes for ${currentPerson}`,
-                content: btoa(JSON.stringify(votes)),
-                branch: GITHUB_BRANCH
-            };
-            if (shaMap[currentPerson]) body.sha = shaMap[currentPerson];
-            
-            const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/votes/${currentPerson}.json`, {
+            const res = await fetch(`${JSONBIN_BASE}/${binId}`, {
                 method: 'PUT',
-                headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(votes)
             });
-            
+
             if (res.ok) {
-                const data = await res.json();
-                shaMap[currentPerson] = data.content.sha;
                 document.getElementById('saveStatus').textContent = '✅ Saved!';
                 document.getElementById('saveStatus').className = 'save-status saved';
             } else {
-                const err = await res.json();
-                console.error('Save failed:', err);
+                console.error('Save failed:', res.status);
                 document.getElementById('saveStatus').textContent = '⚠️ Save failed — check console';
                 document.getElementById('saveStatus').className = 'save-status';
             }
