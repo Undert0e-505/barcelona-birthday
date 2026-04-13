@@ -394,12 +394,12 @@ const VOTER_CODES = {
     ntrmfid2: 'matt'
 };
 
-const JSONBIN_BASE = 'https://bcn-api.vercel.app/api/votes';
+const KVDB_BASE = 'https://kvdb.io';
 // keyed by ?v= code
 const BIN_IDS = {
-    srka38td: '019d8787-172a-782d-b23a-77b572202f55',
-    d1tifg18: '019d8787-1888-76b1-b697-82eaa20d48eb',
-    ntrmfid2: '019d8787-19d9-7b20-af0c-a1352f02a6b3'
+    srka38td: '2tZBHj94Jcbys5VGTxTCJ8',
+    d1tifg18: 'Yc5oQyXz3R5MZyecbVLP7D',
+    ntrmfid2: 'QekwxQHq5uJfqVonojJUrc'
 };
 
 const ITEMS = [
@@ -604,7 +604,7 @@ async function loadFromBin() {
     const binId = BIN_IDS[currentCode];
     if (!binId) return;
     try {
-        const res = await fetch(`${JSONBIN_BASE}/${binId}`);
+        const res = await fetch(`${KVDB_BASE}/${binId}/votes`);
         if (res.ok) {
             const remote = await res.json();
             votes = { ...votes, ...remote };
@@ -624,7 +624,7 @@ async function saveToBin() {
 
     saveTimeout = setTimeout(async () => {
         try {
-            const res = await fetch(`${JSONBIN_BASE}/${binId}`, {
+            const res = await fetch(`${KVDB_BASE}/${binId}/votes`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(votes)
