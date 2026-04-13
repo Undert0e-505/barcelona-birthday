@@ -94,40 +94,47 @@
             background: linear-gradient(transparent, var(--bg));
         }
 
-        /* Person picker */
-        .who-are-you {
+        /* Person banner */
+        .person-banner {
             max-width: 500px;
-            margin: -30px auto 0;
+            margin: -20px auto 0;
             padding: 0 1rem;
-            text-align: center;
             position: relative;
             z-index: 10;
+            display: flex;
+            justify-content: center;
         }
-        .who-are-you h2 {
-            font-size: 1.1rem;
-            margin-bottom: 0.75rem;
-            color: var(--sunset3);
-            font-weight: 700;
-        }
-        .person-buttons { display: flex; gap: 0.75rem; justify-content: center; }
-        .person-btn {
-            padding: 0.75rem 1.5rem;
+        .person-banner-inner {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 1.25rem;
             border-radius: 50px;
-            border: 3px solid;
-            background: transparent;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
+            border: 2px solid;
+            background: var(--bg);
         }
-        .person-btn.aaron { border-color: var(--aaron); color: var(--aaron); }
-        .person-btn.will { border-color: var(--will); color: var(--will); }
-        .person-btn.matt { border-color: var(--matt); color: var(--matt); }
-        .person-btn.aaron.active { background: var(--aaron); color: white; box-shadow: 0 4px 15px rgba(66,133,244,0.4); }
-        .person-btn.will.active { background: var(--will); color: white; box-shadow: 0 4px 15px rgba(52,168,83,0.4); }
-        .person-btn.matt.active { background: var(--matt); color: white; box-shadow: 0 4px 15px rgba(234,67,53,0.4); }
-        .person-btn:hover { transform: scale(1.05); }
+        .person-banner-inner .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Error / unknown link */
+        .link-error {
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            color: var(--matt);
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 2px solid #3a1a1a;
+        }
+        .link-error h2 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+        .link-error p { font-size: 0.9rem; color: #888; }
 
         /* Category nav */
         .nav-bar {
@@ -296,16 +303,9 @@
 
 <div class="carousel" id="carousel"></div>
 
-<div class="who-are-you" id="whoAreYou">
-    <h2>Who's voting?</h2>
-    <div class="person-buttons">
-        <button class="person-btn aaron" onclick="setPerson('aaron')">Aaron 👨</button>
-        <button class="person-btn will" onclick="setPerson('will')">Will 🏴</button>
-        <button class="person-btn matt" onclick="setPerson('matt')">Matt 🎮</button>
-    </div>
-</div>
+<div class="person-banner" id="personBanner"></div>
 
-<div class="nav-bar" id="navBar">
+<div class="nav-bar hidden" id="navBar">
     <button class="nav-btn active" data-cat="all">🔥 All</button>
     <button class="nav-btn" data-cat="sights">🏛️ Sights</button>
     <button class="nav-btn" data-cat="activities">🎯 Activities</button>
@@ -313,11 +313,11 @@
     <button class="nav-btn" data-cat="beach">🏖️ Beach</button>
 </div>
 
-<div class="save-status" id="saveStatus"></div>
+<div class="save-status hidden" id="saveStatus"></div>
 
-<div class="container" id="itemsList"></div>
+<div class="container hidden" id="itemsList"></div>
 
-<div class="add-section">
+<div class="add-section hidden" id="addSection">
     <div class="add-card">
         <input type="text" id="newItemName" placeholder="Add something new...">
         <select id="newItemCategory">
@@ -330,45 +330,56 @@
     </div>
 </div>
 
-<div class="results-link-section">
+<div class="results-link-section hidden" id="resultsSection">
     <a href="results.html" class="results-link-btn">📊 See Everyone's Results →</a>
 </div>
 
 <script>
 // ── Data ──
-const PERSONS = ['aaron', 'will', 'matt'];
 const PERSON_COLORS = { aaron: '#4285f4', will: '#34a853', matt: '#ea4335' };
 
+// ?v= code → person name
+const VOTER_CODES = {
+    x7kQm9pW: 'aaron',
+    z3nRb8tY: 'will',
+    f5mJd2wA: 'matt'
+};
+
 const JSONBIN_BASE = 'https://jsonbin-zeta.vercel.app/api/bins';
-const BIN_IDS = { aaron: 'tBhZlaNHUh', will: 'oADjd-XS7X', matt: 'o-zspTcEWJ' };
+// keyed by ?v= code
+const BIN_IDS = {
+    x7kQm9pW: 'tBhZlaNHUh',
+    z3nRb8tY: 'oADjd-XS7X',
+    f5mJd2wA: 'o-zspTcEWJ'
+};
 
 const ITEMS = [
     { id:'sagrada', name:'La Sagrada Família', desc:'Gaudí\'s jaw-dropping unfinished cathedral. Book ahead or you\'ll be queuing for hours.', cat:'sights', img:'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=400&h=300&fit=crop', link:'https://www.sagradafamilia.org/en/' },
     { id:'parkguell', name:'Park Güell', desc:'Gaudí\'s rainbow mosaic park overlooking the whole city. The gingerbread houses at the entrance are iconic.', cat:'sights', img:'https://images.unsplash.com/photo-1464790719320-3ad757b27937?w=400&h=300&fit=crop', link:'https://www.parkguell.barcelona/en/' },
     { id:'casabatllo', name:'Casa Batlló', desc:'Dragon-roofed building on Passeig de Gràcia. The inside is absolutely mental.', cat:'sights', img:'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=400&h=300&fit=crop', link:'https://www.casabatllo.es/en/' },
     { id:'casamila', name:'Casa Milà (La Pedrera)', desc:'Wavy stone apartment block with an alien-looking rooftop. Night visits are especially cool.', cat:'sights', img:'https://images.unsplash.com/photo-1588345921523-c2dcdb70f1c6?w=400&h=300&fit=crop', link:'https://www.lapedrera.com/en' },
-    { id:'gothic', name:'Gothic Quarter', desc:'Narrow medieval streets, hidden squares, Roman ruins, and Barcelona Cathedral. Get lost on purpose.', cat:'sights', img:'https://images.unsplash.com/photo-1517457373958-b7c8b4a8213c?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/barcelona-gothic-quarter.html' },
-    { id:'lasramblas', name:'La Rambla', desc:'The famous boulevard — street performers, flower stalls, and way too many tourists. Still worth a walk.', cat:'sights', img:'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/la-rambla.html' },
+    { id:'gothic', name:'Gothic Quarter', desc:'Narrow medieval streets, hidden squares, Roman ruins, and Barcelona Cathedral. Get lost on purpose.', cat:'sights', img:'https://images.unsplash.com/photo-1517457373958-b7c8b4a8213c?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Gothic+Quarter+Barcelona' },
+    { id:'lasramblas', name:'La Rambla', desc:'The famous boulevard — street performers, flower stalls, and way too many tourists. Still worth a walk.', cat:'sights', img:'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=La+Rambla+Barcelona' },
     { id:'boqueria', name:'Mercat de la Boqueria', desc:'Epic food market off La Rambla. Fresh juices, jamón, and tapas bars crammed together. Go hungry.', cat:'sights', img:'https://images.unsplash.com/photo-1559339352-11d035aa5de9?w=400&h=300&fit=crop', link:'https://boqueria.barcelona/en/' },
-    { id:'montjuic', name:'Montjuïc', desc:'Hill with a castle, botanical gardens, Olympic stadium, and sick views. Take the cable car up.', cat:'sights', img:'https://images.unsplash.com/photo-1562886877-aaaa6a0bae17?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/montjuic.html' },
+    { id:'montjuic', name:'Montjuïc', desc:'Hill with a castle, botanical gardens, Olympic stadium, and sick views. Take the cable car up.', cat:'sights', img:'https://images.unsplash.com/photo-1562886877-aaaa6a0bae17?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Montjuic+Castle+Barcelona' },
     { id:'picasso', name:'Picasso Museum', desc:'World\'s biggest collection of his early work in a medieval palace in El Born.', cat:'sights', img:'https://images.unsplash.com/photo-1579785673000-3c369168f512?w=400&h=300&fit=crop', link:'https://museupicasso.bcn.cat/en/' },
-    { id:'campnou', name:'Camp Nou Experience', desc:'FC Barcelona\'s stadium tour. Even if football\'s not your thing, it\'s absolutely massive.', cat:'activities', img:'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=400&h=300&fit=crop', link:'https://fcbarcelona.com/en/visita-camp-nou' },
-    { id:'flamenco', name:'Flamenco Show', desc:'Intense, passionate, loud. Proper Spanish flamenco in a small tablao — way better than the big tourist shows.', cat:'activities', img:'https://images.unsplash.com/photo-1544723795-3fb6469f107b?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/flamenco-barcelona.html' },
-    { id:'bikes', name:'Bike Tour', desc:'Cycling through the Gothic Quarter, along the beach, and past all the Gaudí buildings. Fun way to get orientated.', cat:'activities', img:'https://images.unsplash.com/photo-1504279577054-acfeccf8fc52?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/tours/barcelona-bike-tours.html' },
-    { id:'cooking', name:'Cooking Class', desc:'Learn to make paella and tapas with a local chef, then eat what you made. Competitive cooking?', cat:'activities', img:'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/tours/cooking-classes-barcelona.html' },
-    { id:'cablecar', name:'Port Cable Car', desc:'Ride from Barceloneta to Montjuïc hanging over the harbour. Great photos.', cat:'activities', img:'https://images.unsplash.com/photo-1533104816931-7c1c7f9e4e3d?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/barcelona-cable-car.html' },
+    { id:'campnou', name:'Camp Nou Experience', desc:'FC Barcelona\'s stadium tour. Even if football\'s not your thing, it\'s absolutely massive.', cat:'activities', img:'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=400&h=300&fit=crop', link:'https://www.fcbarcelona.com/en/tickets/camp-nou-experience' },
+    { id:'flamenco', name:'Flamenco Show', desc:'Intense, passionate, loud. Proper Spanish flamenco in a small tablao — way better than the big tourist shows.', cat:'activities', img:'https://images.unsplash.com/photo-1544723795-3fb6469f107b?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Tablao+Flamenco+Barcelona' },
+    { id:'bikes', name:'Bike Tour', desc:'Cycling through the Gothic Quarter, along the beach, and past all the Gaudí buildings. Fun way to get orientated.', cat:'activities', img:'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Barcelona+Bike+Tours' },
+    { id:'cooking', name:'Cooking Class', desc:'Learn to make paella and tapas with a local chef, then eat what you made. Competitive cooking?', cat:'activities', img:'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Paella+Cooking+Class+Barcelona' },
+    { id:'cablecar', name:'Port Cable Car', desc:'Ride from Barceloneta to Montjuïc hanging over the harbour. Great photos.', cat:'activities', img:'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Teleferic+del+Port+Barcelona' },
     { id:'aquarium', name:'L\'Aquàrium', desc:'Sharks, rays, and an 80m underwater tunnel. Decent way to escape the midday heat.', cat:'activities', img:'https://images.unsplash.com/photo-1544551763-46c0f613c4e0?w=400&h=300&fit=crop', link:'https://www.aquariumbcn.com/en/' },
-    { id:'escape', name:'Escape Room', desc:'Barcelona-themed puzzles. Could be a laugh — especially if we race each other.', cat:'activities', img:'https://images.unsplash.com/photo-1558618666-fcd25c85f6e2?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/escape-rooms-barcelona.html' },
-    { id:'smokehouse', name:'Smoked BBQ — Brisket & Beer', desc:'Low and slow Texas-style smoked meats. Craft beer on the side. A proper feast.', cat:'food', img:'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/bbq-restaurants-barcelona.html' },
-    { id:'steakhouse', name:'Proper Steakhouse', desc:'Dry-aged, charcoal-grilled, the works. Find a good one and go large.', cat:'food', img:'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/steak-restaurants-barcelona.html' },
-    { id:'ramen', name:'Ramen / Japanese', desc:'Big bowls of tonkotsu ramen, gyoza, and maybe some karaage chicken.', cat:'food', img:'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/japanese-restaurants-barcelona.html' },
-    { id:'dimsum', name:'Dim Sum / Chinese', desc:'Dumplings, bao, char siu, and everything steamed. Comfort food.', cat:'food', img:'https://images.unsplash.com/photo-1496116218417-1a7813714f1c?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/chinese-restaurants-barcelona.html' },
-    { id:'tapas', name:'Tapas Crawl', desc:'Bar-hop through the Gothic Quarter. Patatas bravas, croquetas, jamón, and cava at every stop.', cat:'food', img:'https://images.unsplash.com/photo-1511527661048-7fe73d85e9a4?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/tapas-barcelona.html' },
-    { id:'paella', name:'Authentic Paella', desc:'Proper Valencian paella by the beach — not the tourist trap version. Seafood or mixed.', cat:'food', img:'https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/paella-barcelona.html' },
-    { id:'pinxtos', name:'Pintxos Night', desc:'Basque-style bar snacks on sticks — grab what you want, pay by the stick. Fun and chaotic.', cat:'food', img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/pintxos-barcelona.html' },
-    { id:'churros', name:'Churros & Chocolate', desc:'Thick hot chocolate you can stand a spoon in, with fresh churros for dipping. Legendary.', cat:'food', img:'https://images.unsplash.com/photo-1624353365306-4259a6f80966?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/churros-barcelona.html' },
-    { id:'barceloneta', name:'Barceloneta Beach Day', desc:'Sun, sea, sand, and seafood shacks along the promenade. Classic Barcelona beach day.', cat:'beach', img:'https://images.unsplash.com/photo-1504279577054-acfeccf8fc52?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/barceloneta-beach.html' },
-    { id:'bogatell', name:'Bogatell Beach', desc:'Quieter than Barceloneta. More locals, less touristy, still great facilities.', cat:'beach', img:'https://images.unsplash.com/photo-1519046904884-53103b3cc2de?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/bogatell-beach.html' },
+    { id:'escape', name:'Escape Room', desc:'Barcelona-themed puzzles. Could be a laugh — especially if we race each other.', cat:'activities', img:'https://images.unsplash.com/photo-1558618666-fcd25c85f6e2?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Escape+Room+Barcelona' },
+    { id:'smokehouse', name:'Smoked BBQ — Brisket & Beer', desc:'Low and slow Texas-style smoked meats. Craft beer on the side. A proper feast.', cat:'food', img:'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=BBQ+Smokehouse+Restaurant+Barcelona' },
+    { id:'steakhouse', name:'Proper Steakhouse', desc:'Dry-aged, charcoal-grilled, the works. Find a good one and go large.', cat:'food', img:'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Steak+Restaurant+Barcelona' },
+    { id:'ramen', name:'Ramen / Japanese', desc:'Big bowls of tonkotsu ramen, gyoza, and maybe some karaage chicken.', cat:'food', img:'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Ramen+Restaurant+Barcelona' },
+    { id:'dimsum', name:'Dim Sum / Chinese', desc:'Dumplings, bao, char siu, and everything steamed. Comfort food.', cat:'food', img:'https://images.unsplash.com/photo-1496116218417-1a7813714f1c?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Dim+Sum+Chinese+Restaurant+Barcelona' },
+    { id:'tapas', name:'Tapas Crawl', desc:'Bar-hop through the Gothic Quarter. Patatas bravas, croquetas, jamón, and cava at every stop.', cat:'food', img:'https://images.unsplash.com/photo-1511527661048-7fe73d85e9a4?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Tapas+Bar+El+Born+Barcelona' },
+    { id:'paella', name:'Authentic Paella', desc:'Proper Valencian paella by the beach — not the tourist trap version. Seafood or mixed.', cat:'food', img:'https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Authentic+Paella+Restaurant+Barceloneta' },
+    { id:'pinxtos', name:'Pintxos Night', desc:'Basque-style bar snacks on sticks — grab what you want, pay by the stick. Fun and chaotic.', cat:'food', img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Pintxos+Bar+Barcelona' },
+    { id:'churros', name:'Churros & Chocolate', desc:'Thick hot chocolate you can stand a spoon in, with fresh churros for dipping. Legendary.', cat:'food', img:'https://images.unsplash.com/photo-1624353365306-4259a6f80966?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Granja+M+Viader+Barcelona+Churros+Chocolate' },
+    { id:'barceloneta', name:'Barceloneta Beach Day', desc:'Sun, sea, sand, and seafood shacks along the promenade. Classic Barcelona beach day.', cat:'beach', img:'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Barceloneta+Beach+Barcelona' },
+    { id:'bogatell', name:'Bogatell Beach', desc:'Quieter than Barceloneta. More locals, less touristy, still great facilities.', cat:'beach', img:'https://images.unsplash.com/photo-1519046904884-53103b3cc2de?w=400&h=300&fit=crop', link:'https://maps.google.com/?q=Bogatell+Beach+Barcelona' },
 ];
 
 const CAROUSEL_IMGS = [
@@ -380,6 +391,7 @@ const CAROUSEL_IMGS = [
     'https://images.unsplash.com/photo-1517457373958-b7c8b4a8213c?w=1200&h=400&fit=crop',
 ];
 
+let currentCode = null;
 let currentPerson = null;
 let currentCategory = 'all';
 let votes = {};
@@ -389,19 +401,48 @@ let saveTimeout = null;
 // ── Init ──
 function init() {
     const params = new URLSearchParams(window.location.search);
-    currentPerson = params.get('who');
+    currentCode = params.get('v');
+    currentPerson = currentCode ? VOTER_CODES[currentCode] : null;
+
+    setupCarousel();
+
+    if (!currentPerson) {
+        showError();
+        return;
+    }
 
     const stored = localStorage.getItem('bcn_custom');
     if (stored) { try { customItems = JSON.parse(stored); } catch(e) {} }
 
-    if (currentPerson) {
-        const storedVotes = localStorage.getItem('bcn_votes_' + currentPerson);
-        if (storedVotes) { try { votes = JSON.parse(storedVotes); } catch(e) {} }
-        renderPersonSelection();
-        loadFromBin();
-    }
+    const storedVotes = localStorage.getItem('bcn_votes_' + currentPerson);
+    if (storedVotes) { try { votes = JSON.parse(storedVotes); } catch(e) {} }
 
-    setupCarousel();
+    showVotingUI();
+    loadFromBin();
+}
+
+function showError() {
+    const banner = document.getElementById('personBanner');
+    banner.innerHTML = `<div class="link-error"><h2>🔗 Link not recognised</h2><p>Check you have the right link — each person has their own unique URL.</p></div>`;
+    banner.style.marginTop = '1.5rem';
+}
+
+function showVotingUI() {
+    const color = PERSON_COLORS[currentPerson];
+    const name = currentPerson.charAt(0).toUpperCase() + currentPerson.slice(1);
+    const banner = document.getElementById('personBanner');
+    banner.innerHTML = `
+        <div class="person-banner-inner" style="border-color:${color};color:${color}">
+            <span class="dot" style="background:${color}"></span>
+            ${name}'s Votes
+        </div>`;
+
+    document.getElementById('navBar').classList.remove('hidden');
+    document.getElementById('saveStatus').classList.remove('hidden');
+    document.getElementById('itemsList').classList.remove('hidden');
+    document.getElementById('addSection').classList.remove('hidden');
+    document.getElementById('resultsSection').classList.remove('hidden');
+
     setupNav();
     renderItems();
 }
@@ -436,29 +477,6 @@ function setupNav() {
             renderItems();
         });
     });
-}
-
-// ── Person ──
-function setPerson(person) {
-    currentPerson = person;
-    const url = new URL(window.location);
-    url.searchParams.set('who', person);
-    window.history.replaceState({}, '', url);
-
-    votes = {};
-    const storedVotes = localStorage.getItem('bcn_votes_' + currentPerson);
-    if (storedVotes) { try { votes = JSON.parse(storedVotes); } catch(e) {} }
-
-    renderPersonSelection();
-    loadFromBin();
-    renderItems();
-}
-
-function renderPersonSelection() {
-    document.querySelectorAll('.person-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.classList.contains(currentPerson));
-    });
-    document.querySelector('.who-are-you h2').textContent = `You're voting as: ${currentPerson.charAt(0).toUpperCase() + currentPerson.slice(1)}`;
 }
 
 // ── Render items ──
@@ -496,7 +514,6 @@ function renderItems() {
 
 // ── Vote ──
 function vote(itemId, val) {
-    if (!currentPerson) { alert('Pick who you are first!'); return; }
     votes[itemId] = votes[itemId] === val ? '' : val;
     localStorage.setItem('bcn_votes_' + currentPerson, JSON.stringify(votes));
     renderItems();
@@ -519,13 +536,12 @@ function addItem() {
 
 // ── jsonbin backend ──
 async function loadFromBin() {
-    const binId = BIN_IDS[currentPerson];
+    const binId = BIN_IDS[currentCode];
     if (!binId) return;
     try {
         const res = await fetch(`${JSONBIN_BASE}/${binId}`);
         if (res.ok) {
             const remote = await res.json();
-            // Remote wins for existing keys, local wins for keys not yet on remote
             votes = { ...votes, ...remote };
             localStorage.setItem('bcn_votes_' + currentPerson, JSON.stringify(votes));
             renderItems();
@@ -534,7 +550,7 @@ async function loadFromBin() {
 }
 
 async function saveToBin() {
-    const binId = BIN_IDS[currentPerson];
+    const binId = BIN_IDS[currentCode];
     if (!binId) return;
 
     clearTimeout(saveTimeout);

@@ -161,8 +161,20 @@
 <script>
 const PERSONS = ['aaron', 'will', 'matt'];
 
+// ?v= code → person name (same mapping as index.html)
+const VOTER_CODES = {
+    x7kQm9pW: 'aaron',
+    z3nRb8tY: 'will',
+    f5mJd2wA: 'matt'
+};
+
 const JSONBIN_BASE = 'https://jsonbin-zeta.vercel.app/api/bins';
-const BIN_IDS = { aaron: 'tBhZlaNHUh', will: 'oADjd-XS7X', matt: 'o-zspTcEWJ' };
+// keyed by ?v= code
+const BIN_IDS = {
+    x7kQm9pW: 'tBhZlaNHUh',
+    z3nRb8tY: 'oADjd-XS7X',
+    f5mJd2wA: 'o-zspTcEWJ'
+};
 
 const ALL_ITEMS = [
     { id:'sagrada', name:'La Sagrada Família', cat:'sights' },
@@ -198,10 +210,12 @@ const CAT_LABELS = { sights: '🏛️ Sights', activities: '🎯 Activities', fo
 
 async function loadVotes() {
     const allVotes = {};
+    const codes = Object.keys(VOTER_CODES);
 
-    await Promise.all(PERSONS.map(async person => {
+    await Promise.all(codes.map(async code => {
+        const person = VOTER_CODES[code];
         try {
-            const res = await fetch(`${JSONBIN_BASE}/${BIN_IDS[person]}`);
+            const res = await fetch(`${JSONBIN_BASE}/${BIN_IDS[code]}`);
             allVotes[person] = res.ok ? await res.json() : {};
         } catch(e) {
             allVotes[person] = {};
@@ -211,7 +225,7 @@ async function loadVotes() {
     // Auto-discover custom items from votes
     const allItemIds = new Set(ALL_ITEMS.map(i => i.id));
     for (const person of PERSONS) {
-        for (const key of Object.keys(allVotes[person])) {
+        for (const key of Object.keys(allVotes[person] || {})) {
             if (!allItemIds.has(key)) {
                 ALL_ITEMS.push({ id: key, name: key.replace(/^custom_/, '').replace(/_\d+$/, '').replace(/_/g, ' '), cat: 'activities' });
                 allItemIds.add(key);
