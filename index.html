@@ -76,16 +76,17 @@
             overflow: hidden;
             background: #000;
         }
-        .carousel img {
-            position: absolute;
-            top: 0; left: 0;
+        .carousel-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.8s ease-in-out;
+        }
+        .carousel-track img {
+            flex: 0 0 100%;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0;
-            transition: opacity 1.5s ease;
         }
-        .carousel img.active { opacity: 1; }
         .carousel::after {
             content: '';
             position: absolute;
@@ -182,6 +183,7 @@
             transition: transform 0.2s, box-shadow 0.2s;
         }
         .item-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+        .item-thumb-link { display: block; }
         .item-thumb {
             width: 100%;
             height: 140px;
@@ -450,21 +452,38 @@ function showVotingUI() {
 // ── Carousel ──
 function setupCarousel() {
     const container = document.getElementById('carousel');
-    CAROUSEL_IMGS.forEach((src, i) => {
+    const track = document.createElement('div');
+    track.className = 'carousel-track';
+    CAROUSEL_IMGS.forEach(src => {
         const img = document.createElement('img');
         img.src = src;
         img.alt = 'Barcelona';
         img.loading = 'lazy';
-        if (i === 0) img.classList.add('active');
-        container.appendChild(img);
+        track.appendChild(img);
     });
-    let current = 0;
+    // Clone first image at end for seamless loop
+    const clone = track.children[0].cloneNode(true);
+    track.appendChild(clone);
+    container.appendChild(track);
+    let idx = 0;
+    const total = CAROUSEL_IMGS.length;
     setInterval(() => {
-        const imgs = container.querySelectorAll('img');
-        imgs[current].classList.remove('active');
-        current = (current + 1) % imgs.length;
-        imgs[current].classList.add('active');
-    }, 4000);
+        idx++;
+        track.style.transform = `translateX(-${idx * 100}%)`;
+        if (idx === total) {
+            setTimeout(() => {
+                track.style.transition = 'none';
+                track.style.transform = 'translateX(0)';
+                idx = 0;
+                // Restore transition after reposition
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        track.style.transition = 'transform 0.8s ease-in-out';
+                    });
+                });
+            }, 850); // after transition completes
+        }
+    }, 2000);
 }
 
 // ── Nav ──
@@ -495,7 +514,7 @@ function renderItems() {
             const myVote = votes[item.id] || '';
             html += `
             <div class="item-card">
-                <img class="item-thumb" src="${item.img}" alt="${item.name}" loading="lazy" onerror="this.style.display='none'">
+                <a href="${item.link}" target="_blank" rel="noopener"><img class="item-thumb" src="${item.img}" alt="${item.name}" loading="lazy" onerror="this.style.display='none'"></a>
                 <div class="item-body">
                     <div class="item-name">${item.name}</div>
                     <div class="item-desc">${item.desc}</div>
