@@ -5,276 +5,300 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎂 Barcelona Birthday Planner</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="config.js"></script>
     <style>
         :root {
-            --blue: #81d3f6;
-            --blue-dark: #3ab0e0;
-            --blue-deeper: #1a8fc4;
-            --gold: #ffcf56;
-            --gold-dark: #e6b73e;
-            --red: #ea4335;
-            --green: #34a853;
-            --charcoal: #2c2c2c;
-            --text: #444;
-            --text-light: #888;
-            --cream: #f5ebe0;
-            --white: #ffffff;
-            --bg: #faf8f5;
+            --aaron: #4285f4;
+            --will: #34a853;
+            --matt: #ea4335;
+            --sunset1: #ff6b35;
+            --sunset2: #f7931e;
+            --sunset3: #ffd23f;
+            --charcoal: #1a1a2e;
+            --text: #333;
+            --text-light: #777;
+            --white: #fff;
+            --bg: #0f0f1a;
+            --card-bg: #1a1a2e;
+            --card-border: #2a2a4a;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Poppins', 'Segoe UI', sans-serif;
-            color: var(--text);
-            line-height: 1.6;
+            font-family: 'Poppins', sans-serif;
+            color: #e0e0e0;
             background: var(--bg);
+            line-height: 1.6;
             -webkit-font-smoothing: antialiased;
         }
+
+        /* Header */
         .header {
-            background: linear-gradient(135deg, var(--blue-dark), var(--blue-deeper));
-            color: white;
-            padding: 2rem 1.5rem;
+            background: linear-gradient(135deg, var(--sunset1), var(--sunset2), var(--sunset3));
+            padding: 2rem 1.5rem 1rem;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        .header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.25rem; }
-        .header p { font-size: 0.95rem; opacity: 0.9; font-weight: 300; }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--charcoal);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 2;
+        }
+        .header .subtitle {
+            font-size: 0.95rem;
+            color: rgba(26,26,46,0.7);
+            font-weight: 500;
+            position: relative;
+            z-index: 2;
+        }
+        .header .birthday-badge {
+            display: inline-block;
+            background: var(--charcoal);
+            color: var(--sunset3);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Carousel */
+        .carousel {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+            background: #000;
+        }
+        .carousel img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        .carousel img.active { opacity: 1; }
+        .carousel::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 60px;
+            background: linear-gradient(transparent, var(--bg));
+        }
+
+        /* Person picker */
         .who-are-you {
-            max-width: 600px;
-            margin: 1.5rem auto;
+            max-width: 500px;
+            margin: -30px auto 0;
             padding: 0 1rem;
             text-align: center;
+            position: relative;
+            z-index: 10;
         }
-        .who-are-you h2 { font-size: 1.2rem; margin-bottom: 1rem; color: var(--charcoal); }
-        .person-buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+        .who-are-you h2 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            color: var(--sunset3);
+            font-weight: 700;
+        }
+        .person-buttons { display: flex; gap: 0.75rem; justify-content: center; }
         .person-btn {
-            padding: 0.85rem 1.5rem;
-            border-radius: 12px;
-            border: 2px solid var(--blue-dark);
-            background: white;
-            color: var(--blue-dark);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            border: 3px solid;
+            background: transparent;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
             font-family: inherit;
         }
-        .person-btn:hover { background: var(--blue-dark); color: white; transform: translateY(-2px); }
-        .person-btn.active { background: var(--blue-dark); color: white; }
-        .person-btn.aaron.active { background: #4285f4; border-color: #4285f4; }
-        .person-btn.will.active { background: #34a853; border-color: #34a853; }
-        .person-btn.matt.active { background: #ea4335; border-color: #ea4335; }
-        .person-btn.aaron { border-color: #4285f4; color: #4285f4; }
-        .person-btn.will { border-color: #34a853; color: #34a853; }
-        .person-btn.matt { border-color: #ea4335; color: #ea4335; }
+        .person-btn.aaron { border-color: var(--aaron); color: var(--aaron); }
+        .person-btn.will { border-color: var(--will); color: var(--will); }
+        .person-btn.matt { border-color: var(--matt); color: var(--matt); }
+        .person-btn.aaron.active { background: var(--aaron); color: white; box-shadow: 0 4px 15px rgba(66,133,244,0.4); }
+        .person-btn.will.active { background: var(--will); color: white; box-shadow: 0 4px 15px rgba(52,168,83,0.4); }
+        .person-btn.matt.active { background: var(--matt); color: white; box-shadow: 0 4px 15px rgba(234,67,53,0.4); }
+        .person-btn:hover { transform: scale(1.05); }
+
+        /* Category nav */
         .nav-bar {
-            max-width: 600px;
-            margin: 0 auto 1rem;
+            max-width: 500px;
+            margin: 1.25rem auto 0.75rem;
             padding: 0 1rem;
             display: flex;
-            gap: 0.5rem;
+            gap: 0.4rem;
             overflow-x: auto;
+            scrollbar-width: none;
         }
+        .nav-bar::-webkit-scrollbar { display: none; }
         .nav-btn {
-            padding: 0.5rem 1rem;
+            padding: 0.45rem 0.9rem;
             border-radius: 20px;
             border: none;
-            background: white;
-            color: var(--text);
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
-            font-family: inherit;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .nav-btn:hover { background: var(--blue); color: white; }
-        .nav-btn.active { background: var(--blue-dark); color: white; }
-        .container { max-width: 600px; margin: 0 auto; padding: 0 1rem 2rem; }
-        .category-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--charcoal);
-            margin: 1.5rem 0 0.75rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--blue);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .category-title .emoji { font-size: 1.3rem; }
-        .item-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            transition: transform 0.2s;
-        }
-        .item-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .item-name { font-weight: 600; font-size: 0.95rem; color: var(--charcoal); margin-bottom: 0.25rem; }
-        .item-desc { font-size: 0.82rem; color: var(--text-light); line-height: 1.4; margin-bottom: 0.75rem; }
-        .item-votes {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-        }
-        .vote-btn {
-            padding: 0.5rem;
-            border-radius: 8px;
-            border: 2px solid #e0e0e0;
-            background: white;
+            background: var(--card-bg);
+            color: #aaa;
             font-size: 0.8rem;
             font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .nav-btn:hover { color: white; }
+        .nav-btn.active { background: var(--sunset1); color: white; }
+
+        /* Items */
+        .container { max-width: 500px; margin: 0 auto; padding: 0 1rem 2rem; }
+        .cat-header {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--sunset3);
+            margin: 1.5rem 0 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .item-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--card-border);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .item-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+        .item-thumb {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+        }
+        .item-body { padding: 0.75rem 1rem; }
+        .item-name { font-weight: 700; font-size: 1rem; color: white; margin-bottom: 0.15rem; }
+        .item-desc { font-size: 0.78rem; color: #999; line-height: 1.4; margin-bottom: 0.5rem; }
+        .item-link {
+            display: inline-block;
+            color: var(--sunset2);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 0.75rem;
+        }
+        .item-link:hover { color: var(--sunset3); }
+        .vote-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.4rem; }
+        .vote-btn {
+            padding: 0.55rem;
+            border-radius: 10px;
+            border: 2px solid #333;
+            background: transparent;
+            font-size: 0.85rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.15s;
             font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.3rem;
+            text-align: center;
         }
         .vote-btn:hover { transform: scale(1.05); }
-        .vote-btn.maybe { color: var(--text-light); }
-        .vote-btn.maybe.selected { background: #fff3d6; border-color: var(--gold); color: #b8860b; }
-        .vote-btn.yes { color: var(--green); }
-        .vote-btn.yes.selected { background: #dff5e3; border-color: var(--green); color: var(--green); }
-        .vote-btn.no { color: var(--red); }
-        .vote-btn.no.selected { background: #fde8e6; border-color: var(--red); color: var(--red); }
-        .results-section {
-            max-width: 600px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-        .results-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--charcoal);
-            margin-bottom: 1rem;
+        .vote-btn.love { color: #ff4444; border-color: #444; }
+        .vote-btn.love.selected { background: rgba(255,68,68,0.2); border-color: #ff4444; }
+        .vote-btn.ok { color: var(--sunset2); border-color: #444; }
+        .vote-btn.ok.selected { background: rgba(247,147,30,0.2); border-color: var(--sunset2); }
+        .vote-btn.nah { color: #666; border-color: #444; }
+        .vote-btn.nah.selected { background: rgba(100,100,100,0.2); border-color: #666; }
+
+        /* Saving indicator */
+        .save-status {
             text-align: center;
+            font-size: 0.75rem;
+            color: #555;
+            padding: 0.5rem;
         }
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            font-size: 0.85rem;
-        }
-        .results-table th {
-            background: var(--charcoal);
-            color: white;
-            padding: 0.6rem 0.5rem;
-            text-align: center;
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-        .results-table th:first-child { text-align: left; }
-        .results-table td {
-            padding: 0.55rem 0.5rem;
-            border-bottom: 1px solid #f0f0f0;
-            text-align: center;
-            font-size: 0.85rem;
-        }
-        .results-table td:first-child { text-align: left; font-weight: 500; }
-        .results-table tr:last-child td { border-bottom: none; }
-        .vote-yes { color: var(--green); font-weight: 700; }
-        .vote-maybe { color: #b8860b; font-weight: 600; }
-        .vote-no { color: var(--red); font-weight: 600; }
-        .vote-pending { color: #ccc; }
-        .score { font-weight: 700; font-size: 0.9rem; }
-        .score-high { color: var(--green); }
-        .score-mid { color: var(--gold-dark); }
-        .score-low { color: var(--red); }
-        .share-section {
-            max-width: 600px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-            text-align: center;
-        }
-        .share-box {
-            background: white;
-            border-radius: 12px;
-            padding: 1.25rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-        .share-box h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--charcoal); }
-        .share-box p { font-size: 0.85rem; color: var(--text-light); margin-bottom: 0.75rem; }
-        .share-link {
-            width: 100%;
-            padding: 0.6rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-family: monospace;
-            background: var(--bg);
-            color: var(--charcoal);
-        }
-        .copy-btn {
-            margin-top: 0.5rem;
-            padding: 0.5rem 1.5rem;
-            border-radius: 8px;
-            border: none;
-            background: var(--blue-dark);
-            color: white;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-        }
-        .copy-btn:hover { background: var(--blue-deeper); }
-        .add-section {
-            max-width: 600px;
-            margin: 1rem auto;
-            padding: 0 1rem;
-        }
+        .save-status.saving { color: var(--sunset2); }
+        .save-status.saved { color: var(--will); }
+
+        /* Add item */
+        .add-section { max-width: 500px; margin: 0.5rem auto; padding: 0 1rem; }
         .add-card {
-            background: white;
-            border-radius: 12px;
+            background: var(--card-bg);
+            border-radius: 16px;
             padding: 1rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            border: 2px dashed #ccc;
+            border: 2px dashed var(--card-border);
         }
         .add-card input, .add-card select {
             width: 100%;
-            padding: 0.5rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            padding: 0.55rem 0.75rem;
+            border: 2px solid #333;
+            border-radius: 10px;
             font-size: 0.9rem;
             font-family: inherit;
+            background: #111;
+            color: white;
             margin-bottom: 0.5rem;
         }
+        .add-card select { color: #aaa; }
         .add-btn {
             width: 100%;
-            padding: 0.6rem;
-            border-radius: 8px;
+            padding: 0.65rem;
+            border-radius: 12px;
             border: none;
-            background: var(--gold);
+            background: linear-gradient(135deg, var(--sunset1), var(--sunset2));
             color: var(--charcoal);
             font-size: 0.9rem;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
             font-family: inherit;
         }
-        .add-btn:hover { background: var(--gold-dark); }
-        .hidden { display: none; }
+        .add-btn:hover { transform: scale(1.02); }
+
+        /* Results link */
+        .results-link-section {
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            text-align: center;
+        }
+        .results-link-btn {
+            display: inline-block;
+            padding: 0.85rem 2rem;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--aaron), var(--will), var(--matt));
+            color: white;
+            font-size: 1rem;
+            font-weight: 800;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .results-link-btn:hover { transform: scale(1.05); box-shadow: 0 6px 25px rgba(66,133,244,0.3); }
+
+        .hidden { display: none !important; }
         @media (max-width: 480px) {
-            .header h1 { font-size: 1.4rem; }
-            .person-btn { padding: 0.7rem 1rem; font-size: 0.9rem; }
-            .item-votes { grid-template-columns: repeat(3, 1fr); }
+            .header h1 { font-size: 1.5rem; }
+            .carousel { height: 140px; }
+            .item-thumb { height: 110px; }
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>🎂 Barcelona Birthday Planner</h1>
-    <p>Vote on what we should do — majority wins!</p>
+    <h1>🇪🇸 Barcelona Birthday</h1>
+    <p class="subtitle">Vote on what we're doing — majority rules 🤘</p>
+    <div class="birthday-badge">🎂 Shhh... it's a surprise!</div>
 </div>
 
+<div class="carousel" id="carousel"></div>
+
 <div class="who-are-you" id="whoAreYou">
-    <h2>Who are you?</h2>
+    <h2>Who's voting?</h2>
     <div class="person-buttons">
         <button class="person-btn aaron" onclick="setPerson('aaron')">Aaron 👨</button>
         <button class="person-btn will" onclick="setPerson('will')">Will 🏴</button>
@@ -283,18 +307,20 @@
 </div>
 
 <div class="nav-bar" id="navBar">
-    <button class="nav-btn active" onclick="showCategory('all')">All</button>
-    <button class="nav-btn" onclick="showCategory('sights')">🏛️ Sights</button>
-    <button class="nav-btn" onclick="showCategory('activities')">🎯 Activities</button>
-    <button class="nav-btn" onclick="showCategory('food')">🍽️ Food</button>
-    <button class="nav-btn" onclick="showCategory('beach')">🏖️ Beach</button>
+    <button class="nav-btn active" data-cat="all">🔥 All</button>
+    <button class="nav-btn" data-cat="sights">🏛️ Sights</button>
+    <button class="nav-btn" data-cat="activities">🎯 Activities</button>
+    <button class="nav-btn" data-cat="food">🍽️ Food</button>
+    <button class="nav-btn" data-cat="beach">🏖️ Beach</button>
 </div>
+
+<div class="save-status" id="saveStatus"></div>
 
 <div class="container" id="itemsList"></div>
 
 <div class="add-section">
     <div class="add-card">
-        <input type="text" id="newItemName" placeholder="Add something to the list...">
+        <input type="text" id="newItemName" placeholder="Add something new...">
         <select id="newItemCategory">
             <option value="sights">🏛️ Sights</option>
             <option value="activities">🎯 Activities</option>
@@ -305,285 +331,256 @@
     </div>
 </div>
 
-<div class="results-section">
-    <div class="results-title">📊 Results So Far</div>
-    <div id="resultsTable"></div>
-</div>
-
-<div class="share-section">
-    <div class="share-box">
-        <h3>🔗 Share Your Votes</h3>
-        <p>Copy this link and send it to the others. When they open it, their votes appear in the results alongside yours.</p>
-        <input type="text" class="share-link" id="shareLink" readonly>
-        <br>
-        <button class="copy-btn" onclick="copyShareLink()">Copy Link</button>
-    </div>
+<div class="results-link-section">
+    <a href="results.html" class="results-link-btn">📊 See Everyone's Results →</a>
 </div>
 
 <script>
+// ── Data ──
 const PERSONS = ['aaron', 'will', 'matt'];
-const PERSON_EMOJIS = { aaron: '👨', will: '🏴', matt: '🎮' };
 const PERSON_COLORS = { aaron: '#4285f4', will: '#34a853', matt: '#ea4335' };
 
-const DEFAULT_ITEMS = [
-    // Sights
-    { id: 'sagrada', name: 'La Sagrada Família', desc: 'Gaudí\'s unfinished masterpiece. Book tickets in advance — it sells out daily.', cat: 'sights' },
-    { id: 'parkguell', name: 'Park Güell', desc: 'Gaudí\'s colourful mosaic park with panoramic city views.', cat: 'sights' },
-    { id: 'casabatllo', name: 'Casa Batlló', desc: 'Gaudí\'s dragon-inspired apartment building on Passeig de Gràcia.', cat: 'sights' },
-    { id: 'casamila', name: 'Casa Milà (La Pedrera)', desc: 'Gaudí\'s wavy stone building with an extraordinary rooftop.', cat: 'sights' },
-    { id: 'gothic', name: 'Gothic Quarter', desc: 'Medieval narrow streets, hidden squares, Roman ruins, and Barcelona Cathedral.', cat: 'sights' },
-    { id: 'lasramblas', name: 'La Rambla', desc: 'The famous tree-lined boulevard from Plaça Catalunya to the port.', cat: 'sights' },
-    { id: 'boqueria', name: 'Mercat de la Boqueria', desc: 'Iconic food market off La Rambla — fresh produce, tapas bars, juices.', cat: 'sights' },
-    { id: 'montjuic', name: 'Montjuïc', desc: 'Hill with castle, gardens, Olympic stadium, and cable car views.', cat: 'sights' },
-    { id: 'picasso', name: 'Picasso Museum', desc: 'World\'s largest collection of Picasso\'s early works in the El Born district.', cat: 'sights' },
-    // Activities
-    { id: 'campnou', name: 'Camp Nou Experience', desc: 'Tour of FC Barcelona\'s legendary stadium — even if football\'s not your thing, it\'s immense.', cat: 'activities' },
-    { id: 'flamenco', name: 'Flamenco Show', desc: 'Traditional Andalusian flamenco in an intimate tablao setting.', cat: 'activities' },
-    { id: 'bikes', name: 'Bike Tour', desc: 'Guided cycling tour through the Gothic Quarter, beach, and parks.', cat: 'activities' },
-    { id: 'cooking', name: 'Cooking Class', desc: 'Learn to make paella and tapas with a local chef. Eat what you make.', cat: 'activities' },
-    { id: 'cablecar', name: 'Port Cable Car', desc: 'Ride from Barceloneta to Montjuïc with aerial views of the harbour.', cat: 'activities' },
-    { id: 'aquarium', name: 'L\'Aquàrium de Barcelona', desc: 'Mediterranean sea life, underwater tunnel, and shark tank.', cat: 'activities' },
-    { id: 'escape', name: 'Escape Room', desc: 'Barcelona-themed escape rooms — fun for the three of us.', cat: 'activities' },
-    // Food
-    { id: 'smokehouse', name: 'Smoked BBQ Restaurant', desc: 'Low and slow smoked meats — we need to find a good one.', cat: 'food' },
-    { id: 'steakhouse', name: 'Proper Steakhouse', desc: 'Dry-aged, charcoal-grilled, the works.', cat: 'food' },
-    { id: 'ramen', name: 'Ramen / Japanese', desc: 'Big bowls of tonkotsu or miso ramen.', cat: 'food' },
-    { id: 'dimsum', name: 'Dim Sum / Chinese', desc: 'Dumplings, bao, and everything steamed.', cat: 'food' },
-    { id: 'tapas', name: 'Tapas Crawl', desc: 'Bar-hop through the Gothic Quarter trying small plates at each stop.', cat: 'food' },
-    { id: 'paella', name: 'Authentic Paella', desc: 'Proper Valencian paella by the beach — not the tourist trap version.', cat: 'food' },
-    { id: 'pinxtos', name: 'Pintxos Night', desc: 'Basque-style bar snacks on sticks — pay by the stick.', cat: 'food' },
-    { id: 'churros', name: 'Churros & Chocolate', desc: 'Thick hot chocolate and fresh churros — a Barcelona must.', cat: 'food' },
-    // Beach
-    { id: 'barceloneta', name: 'Barceloneta Beach Day', desc: 'Sun, sea, sand, and seafood restaurants along the promenade.', cat: 'beach' },
-    { id: 'bogatell', name: 'Bogatell Beach', desc: 'Quieter than Barceloneta, more local vibe, still great facilities.', cat: 'beach' },
+const ITEMS = [
+    { id:'sagrada', name:'La Sagrada Família', desc:'Gaudí\'s jaw-dropping unfinished cathedral. Book ahead or you\'ll be queuing for hours.', cat:'sights', img:'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=400&h=300&fit=crop', link:'https://www.sagradafamilia.org/en/' },
+    { id:'parkguell', name:'Park Güell', desc:'Gaudí\'s rainbow mosaic park overlooking the whole city. The gingerbread houses at the entrance are iconic.', cat:'sights', img:'https://images.unsplash.com/photo-1464790719320-3ad757b27937?w=400&h=300&fit=crop', link:'https://www.parkguell.barcelona/en/' },
+    { id:'casabatllo', name:'Casa Batlló', desc:'Dragon-roofed building on Passeig de Gràcia. The inside is absolutely mental.', cat:'sights', img:'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=400&h=300&fit=crop', link:'https://www.casabatllo.es/en/' },
+    { id:'casamila', name:'Casa Milà (La Pedrera)', desc:'Wavy stone apartment block with an alien-looking rooftop. Night visits are especially cool.', cat:'sights', img:'https://images.unsplash.com/photo-1588345921523-c2dcdb70f1c6?w=400&h=300&fit=crop', link:'https://www.lapedrera.com/en' },
+    { id:'gothic', name:'Gothic Quarter', desc:'Narrow medieval streets, hidden squares, Roman ruins, and Barcelona Cathedral. Get lost on purpose.', cat:'sights', img:'https://images.unsplash.com/photo-1517457373958-b7c8b4a8213c?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/barcelona-gothic-quarter.html' },
+    { id:'lasramblas', name:'La Rambla', desc:'The famous boulevard — street performers, flower stalls, and way too many tourists. Still worth a walk.', cat:'sights', img:'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/la-rambla.html' },
+    { id:'boqueria', name:'Mercat de la Boqueria', desc:'Epic food market off La Rambla. Fresh juices, jamón, and tapas bars crammed together. Go hungry.', cat:'sights', img:'https://images.unsplash.com/photo-1559339352-11d035aa5de9?w=400&h=300&fit=crop', link:'https://boqueria.barcelona/en/' },
+    { id:'montjuic', name:'Montjuïc', desc:'Hill with a castle, botanical gardens, Olympic stadium, and sick views. Take the cable car up.', cat:'sights', img:'https://images.unsplash.com/photo-1562886877-aaaa6a0bae17?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/montjuic.html' },
+    { id:'picasso', name:'Picasso Museum', desc:'World\'s biggest collection of his early work in a medieval palace in El Born.', cat:'sights', img:'https://images.unsplash.com/photo-1579785673000-3c369168f512?w=400&h=300&fit=crop', link:'https://museupicasso.bcn.cat/en/' },
+    { id:'campnou', name:'Camp Nou Experience', desc:'FC Barcelona\'s stadium tour. Even if football\'s not your thing, it\'s absolutely massive.', cat:'activities', img:'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=400&h=300&fit=crop', link:'https://fcbarcelona.com/en/visita-camp-nou' },
+    { id:'flamenco', name:'Flamenco Show', desc:'Intense, passionate, loud. Proper Spanish flamenco in a small tablao — way better than the big tourist shows.', cat:'activities', img:'https://images.unsplash.com/photo-1544723795-3fb6469f107b?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/flamenco-barcelona.html' },
+    { id:'bikes', name:'Bike Tour', desc:'Cycling through the Gothic Quarter, along the beach, and past all the Gaudí buildings. Fun way to get orientated.', cat:'activities', img:'https://images.unsplash.com/photo-1504279577054-acfeccf8fc52?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/tours/barcelona-bike-tours.html' },
+    { id:'cooking', name:'Cooking Class', desc:'Learn to make paella and tapas with a local chef, then eat what you made. Competitive cooking?', cat:'activities', img:'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/tours/cooking-classes-barcelona.html' },
+    { id:'cablecar', name:'Port Cable Car', desc:'Ride from Barceloneta to Montjuïc hanging over the harbour. Great photos.', cat:'activities', img:'https://images.unsplash.com/photo-1533104816931-7c1c7f9e4e3d?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/barcelona-cable-car.html' },
+    { id:'aquarium', name:'L\'Aquàrium', desc:'Sharks, rays, and an 80m underwater tunnel. Decent way to escape the midday heat.', cat:'activities', img:'https://images.unsplash.com/photo-1544551763-46c0f613c4e0?w=400&h=300&fit=crop', link:'https://www.aquariumbcn.com/en/' },
+    { id:'escape', name:'Escape Room', desc:'Barcelona-themed puzzles. Could be a laugh — especially if we race each other.', cat:'activities', img:'https://images.unsplash.com/photo-1558618666-fcd25c85f6e2?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/escape-rooms-barcelona.html' },
+    { id:'smokehouse', name:'Smoked BBQ — Brisket & Beer', desc:'Low and slow Texas-style smoked meats. Craft beer on the side. A proper feast.', cat:'food', img:'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/bbq-restaurants-barcelona.html' },
+    { id:'steakhouse', name:'Proper Steakhouse', desc:'Dry-aged, charcoal-grilled, the works. Find a good one and go large.', cat:'food', img:'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/steak-restaurants-barcelona.html' },
+    { id:'ramen', name:'Ramen / Japanese', desc:'Big bowls of tonkotsu ramen, gyoza, and maybe some karaage chicken.', cat:'food', img:'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/japanese-restaurants-barcelona.html' },
+    { id:'dimsum', name:'Dim Sum / Chinese', desc:'Dumplings, bao, char siu, and everything steamed. Comfort food.', cat:'food', img:'https://images.unsplash.com/photo-1496116218417-1a7813714f1c?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/chinese-restaurants-barcelona.html' },
+    { id:'tapas', name:'Tapas Crawl', desc:'Bar-hop through the Gothic Quarter. Patatas bravas, croquetas, jamón, and cava at every stop.', cat:'food', img:'https://images.unsplash.com/photo-1511527661048-7fe73d85e9a4?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/tapas-barcelona.html' },
+    { id:'paella', name:'Authentic Paella', desc:'Proper Valencian paella by the beach — not the tourist trap version. Seafood or mixed.', cat:'food', img:'https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/paella-barcelona.html' },
+    { id:'pinxtos', name:'Pintxos Night', desc:'Basque-style bar snacks on sticks — grab what you want, pay by the stick. Fun and chaotic.', cat:'food', img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/pintxos-barcelona.html' },
+    { id:'churros', name:'Churros & Chocolate', desc:'Thick hot chocolate you can stand a spoon in, with fresh churros for dipping. Legendary.', cat:'food', img:'https://images.unsplash.com/photo-1624353365306-4259a6f80966?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/churros-barcelona.html' },
+    { id:'barceloneta', name:'Barceloneta Beach Day', desc:'Sun, sea, sand, and seafood shacks along the promenade. Classic Barcelona beach day.', cat:'beach', img:'https://images.unsplash.com/photo-1504279577054-acfeccf8fc52?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/barceloneta-beach.html' },
+    { id:'bogatell', name:'Bogatell Beach', desc:'Quieter than Barceloneta. More locals, less touristy, still great facilities.', cat:'beach', img:'https://images.unsplash.com/photo-1519046904884-53103b3cc2de?w=400&h=300&fit=crop', link:'https://www.barcelona-tourist-guide.com/en/guide/bogatell-beach.html' },
+];
+
+const CAROUSEL_IMGS = [
+    'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=1200&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=1200&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1464790719320-3ad757b27937?w=1200&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=1200&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1562886877-aaaa6a0bae17?w=1200&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1517457373958-b7c8b4a8213c?w=1200&h=400&fit=crop',
 ];
 
 let currentPerson = null;
 let currentCategory = 'all';
-let items = [...DEFAULT_ITEMS];
 let votes = {};
+let customItems = [];
+let saveTimeout = null;
+let shaMap = {};
 
-// Load from URL params
-function loadFromURL() {
+// ── Init ──
+function init() {
     const params = new URLSearchParams(window.location.search);
-    currentPerson = params.get('who') || null;
+    currentPerson = params.get('who');
     
-    // Load all vote data from URL
-    PERSONS.forEach(p => {
-        const pData = params.get(p);
-        if (pData) {
-            try {
-                votes[p] = JSON.parse(decodeURIComponent(pData));
-            } catch(e) {
-                votes[p] = {};
-            }
-        }
-    });
+    // Load custom items from localStorage
+    const stored = localStorage.getItem('bcn_custom');
+    if (stored) { try { customItems = JSON.parse(stored); } catch(e) {} }
     
-    // Also load from localStorage
-    PERSONS.forEach(p => {
-        const stored = localStorage.getItem('bcn_votes_' + p);
-        if (stored && !votes[p]) {
-            try { votes[p] = JSON.parse(stored); } catch(e) { votes[p] = {}; }
-        }
-    });
-    
-    // Load custom items
-    const customItems = localStorage.getItem('bcn_custom_items');
-    if (customItems) {
-        try {
-            const parsed = JSON.parse(customItems);
-            parsed.forEach(item => {
-                if (!items.find(i => i.id === item.id)) {
-                    items.push(item);
-                }
-            });
-        } catch(e) {}
-    }
-    
+    // Load votes from localStorage
     if (currentPerson) {
+        const storedVotes = localStorage.getItem('bcn_votes_' + currentPerson);
+        if (storedVotes) { try { votes = JSON.parse(storedVotes); } catch(e) {} }
         renderPersonSelection();
-        renderItems();
-        renderResults();
-        renderShareLink();
+        loadSHAFromGitHub();
     }
+    
+    setupCarousel();
+    setupNav();
+    renderItems();
 }
 
+// ── Carousel ──
+function setupCarousel() {
+    const container = document.getElementById('carousel');
+    CAROUSEL_IMGS.forEach((src, i) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = 'Barcelona';
+        img.loading = 'lazy';
+        if (i === 0) img.classList.add('active');
+        container.appendChild(img);
+    });
+    let current = 0;
+    setInterval(() => {
+        const imgs = container.querySelectorAll('img');
+        imgs[current].classList.remove('active');
+        current = (current + 1) % imgs.length;
+        imgs[current].classList.add('active');
+    }, 4000);
+}
+
+// ── Nav ──
+function setupNav() {
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentCategory = btn.dataset.cat;
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderItems();
+        });
+    });
+}
+
+// ── Person ──
 function setPerson(person) {
     currentPerson = person;
     const url = new URL(window.location);
     url.searchParams.set('who', person);
     window.history.replaceState({}, '', url);
+    
+    const storedVotes = localStorage.getItem('bcn_votes_' + currentPerson);
+    if (storedVotes) { try { votes = JSON.parse(storedVotes); } catch(e) {} }
+    
     renderPersonSelection();
+    loadSHAFromGitHub();
     renderItems();
-    renderResults();
-    renderShareLink();
 }
 
 function renderPersonSelection() {
     document.querySelectorAll('.person-btn').forEach(btn => {
         btn.classList.toggle('active', btn.classList.contains(currentPerson));
     });
-    document.getElementById('whoAreYou').querySelector('h2').textContent = `You're voting as: ${currentPerson.charAt(0).toUpperCase() + currentPerson.slice(1)}`;
+    document.querySelector('.who-are-you h2').textContent = `You're voting as: ${currentPerson.charAt(0).toUpperCase() + currentPerson.slice(1)}`;
 }
 
-function showCategory(cat) {
-    currentCategory = cat;
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.toLowerCase().includes(cat === 'all' ? 'all' : cat));
-    });
-    // Fix: match by category
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        const btnCat = btn.getAttribute('onclick').match(/'(\w+)'/)[1];
-        btn.classList.toggle('active', btnCat === cat);
-    });
-    renderItems();
-}
-
+// ── Render items ──
 function renderItems() {
-    const container = document.getElementById('itemsList');
-    const filtered = currentCategory === 'all' ? items : items.filter(i => i.cat === currentCategory);
-    const cats = currentCategory === 'all' ? ['sights', 'activities', 'food', 'beach'] : [currentCategory];
-    const catNames = { sights: '🏛️ Sights & Landmarks', activities: '🎯 Activities', food: '🍽️ Food & Drink', beach: '🏖️ Beach' };
+    const allItems = [...ITEMS, ...customItems];
+    const filtered = currentCategory === 'all' ? allItems : allItems.filter(i => i.cat === currentCategory);
+    const cats = currentCategory === 'all' ? ['sights','activities','food','beach'] : [currentCategory];
+    const catLabels = { sights:'🏛️ Sights & Landmarks', activities:'🎯 Activities & Experiences', food:'🍽️ Food & Drink', beach:'🏖️ Beach' };
     
     let html = '';
     cats.forEach(cat => {
         const catItems = filtered.filter(i => i.cat === cat);
-        if (catItems.length === 0) return;
-        html += `<div class="category-title"><span class="emoji">${catNames[cat].split(' ')[0]}</span>${catNames[cat].substring(catNames[cat].indexOf(' ') + 1)}</div>`;
+        if (!catItems.length) return;
+        html += `<div class="cat-header">${catLabels[cat]}</div>`;
         catItems.forEach(item => {
-            const myVote = currentPerson && votes[currentPerson] ? (votes[currentPerson][item.id] || '') : '';
+            const myVote = votes[item.id] || '';
             html += `
             <div class="item-card">
-                <div class="item-name">${item.name}</div>
-                <div class="item-desc">${item.desc}</div>
-                <div class="item-votes">
-                    <button class="vote-btn yes ${myVote === 'yes' ? 'selected' : ''}" onclick="vote('${item.id}','yes')">❤️ Must</button>
-                    <button class="vote-btn maybe ${myVote === 'maybe' ? 'selected' : ''}" onclick="vote('${item.id}','maybe')">🤷 Maybe</button>
-                    <button class="vote-btn no ${myVote === 'no' ? 'selected' : ''}" onclick="vote('${item.id}','no')">👎 No</button>
+                <img class="item-thumb" src="${item.img}" alt="${item.name}" loading="lazy" onerror="this.style.display='none'">
+                <div class="item-body">
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-desc">${item.desc}</div>
+                    <a class="item-link" href="${item.link}" target="_blank" rel="noopener">More info →</a>
+                    <div class="vote-row">
+                        <button class="vote-btn love ${myVote==='love'?'selected':''}" onclick="vote('${item.id}','love')">❤️ Must</button>
+                        <button class="vote-btn ok ${myVote==='ok'?'selected':''}" onclick="vote('${item.id}','ok')">🤷 Maybe</button>
+                        <button class="vote-btn nah ${myVote==='nah'?'selected':''}" onclick="vote('${item.id}','nah')">👎 Nah</button>
+                    </div>
                 </div>
             </div>`;
         });
     });
-    container.innerHTML = html || '<p style="text-align:center;color:#888;padding:2rem;">No items in this category yet. Add one below!</p>';
+    document.getElementById('itemsList').innerHTML = html || '<p style="text-align:center;color:#555;padding:2rem;">Nothing here yet. Add something!</p>';
 }
 
+// ── Vote ──
 function vote(itemId, vote) {
-    if (!currentPerson) return;
-    if (!votes[currentPerson]) votes[currentPerson] = {};
-    
-    // Toggle: clicking same vote removes it
-    if (votes[currentPerson][itemId] === vote) {
-        delete votes[currentPerson][itemId];
-    } else {
-        votes[currentPerson][itemId] = vote;
-    }
-    
-    // Save to localStorage
-    localStorage.setItem('bcn_votes_' + currentPerson, JSON.stringify(votes[currentPerson]));
-    
+    if (!currentPerson) { alert('Pick who you are first!'); return; }
+    votes[itemId] = votes[itemId] === vote ? '' : vote;
+    localStorage.setItem('bcn_votes_' + currentPerson, JSON.stringify(votes));
     renderItems();
-    renderResults();
-    renderShareLink();
+    saveToGitHub();
 }
 
+// ── Add item ──
 function addItem() {
     const name = document.getElementById('newItemName').value.trim();
     const cat = document.getElementById('newItemCategory').value;
     if (!name) return;
-    
-    const id = 'custom_' + name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
-    const item = { id, name, desc: 'Added by ' + (currentPerson || 'someone'), cat };
-    items.push(item);
-    
-    // Save custom items
-    const customItems = items.filter(i => i.id.startsWith('custom_'));
-    localStorage.setItem('bcn_custom_items', JSON.stringify(customItems));
-    
+    const id = 'custom_' + name.toLowerCase().replace(/[^a-z0-9]/g,'_') + '_' + Date.now();
+    const item = { id, name, desc: 'Added to the list!', cat, img: 'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=400&h=300&fit=crop', link: '#' };
+    customItems.push(item);
+    localStorage.setItem('bcn_custom', JSON.stringify(customItems));
     document.getElementById('newItemName').value = '';
     renderItems();
-    renderResults();
-    renderShareLink();
+    saveToGitHub();
 }
 
-function renderResults() {
-    const container = document.getElementById('resultsTable');
-    const allVoters = {};
-    const personHasVotes = {};
-    
-    PERSONS.forEach(p => {
-        personHasVotes[p] = votes[p] && Object.keys(votes[p]).length > 0;
-    });
-    
-    const anyVotes = PERSONS.some(p => personHasVotes[p]);
-    if (!anyVotes) {
-        container.innerHTML = '<p style="text-align:center;color:#888;padding:1rem;">No votes yet — start voting above!</p>';
+// ── GitHub backend ──
+async function loadSHAFromGitHub() {
+    if (typeof GITHUB_TOKEN === 'undefined' || GITHUB_TOKEN === 'PLACEHOLDER_PUT_YOUR_TOKEN_HERE') return;
+    try {
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/votes/${currentPerson}.json?ref=${GITHUB_BRANCH}`, {
+            headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json' }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            shaMap[currentPerson] = data.sha;
+            const content = JSON.parse(atob(data.content));
+            // Merge: GitHub wins for existing items, localStorage wins for newer local changes
+            votes = { ...votes, ...content };
+            localStorage.setItem('bcn_votes_' + currentPerson, JSON.stringify(votes));
+            renderItems();
+        }
+    } catch(e) { console.log('Load SHA failed:', e); }
+}
+
+async function saveToGitHub() {
+    if (typeof GITHUB_TOKEN === 'undefined' || GITHUB_TOKEN === 'PLACEHOLDER_PUT_YOUR_TOKEN_HERE') {
+        document.getElementById('saveStatus').textContent = '💾 Saved locally (add GitHub token to config.js to sync)';
+        document.getElementById('saveStatus').className = 'save-status saved';
         return;
     }
     
-    // Score: yes=2, maybe=1, no=-1, not voted=0
-    const scored = items.map(item => {
-        let score = 0;
-        const row = {};
-        PERSONS.forEach(p => {
-            const v = votes[p] ? votes[p][item.id] : undefined;
-            row[p] = v;
-            if (v === 'yes') score += 2;
-            else if (v === 'maybe') score += 1;
-            else if (v === 'no') score -= 1;
-        });
-        return { ...item, score, row };
-    }).sort((a, b) => b.score - a.score);
+    clearTimeout(saveTimeout);
+    document.getElementById('saveStatus').textContent = '⏳ Saving...';
+    document.getElementById('saveStatus').className = 'save-status saving';
     
-    let html = '<table class="results-table"><thead><tr><th>Activity</th>';
-    PERSONS.forEach(p => {
-        html += `<th>${PERSON_EMOJIS[p]} ${p.charAt(0).toUpperCase() + p.slice(1)}</th>`;
-    });
-    html += '<th>Score</th></tr></thead><tbody>';
-    
-    scored.forEach(item => {
-        html += '<tr>';
-        html += `<td>${item.name}</td>`;
-        PERSONS.forEach(p => {
-            const v = item.row[p];
-            if (v === 'yes') html += '<td class="vote-yes">❤️</td>';
-            else if (v === 'maybe') html += '<td class="vote-maybe">🤷</td>';
-            else if (v === 'no') html += '<td class="vote-no">👎</td>';
-            else html += '<td class="vote-pending">—</td>';
-        });
-        const scoreClass = item.score >= 4 ? 'score-high' : item.score >= 1 ? 'score-mid' : 'score-low';
-        html += `<td class="score ${scoreClass}">${item.score > 0 ? '+' : ''}${item.score}</td>`;
-        html += '</tr>';
-    });
-    
-    html += '</tbody></table>';
-    container.innerHTML = html;
-}
-
-function renderShareLink() {
-    const url = new URL(window.location);
-    url.searchParams.set('who', currentPerson || '');
-    PERSONS.forEach(p => {
-        if (votes[p] && Object.keys(votes[p]).length > 0) {
-            url.searchParams.set(p, encodeURIComponent(JSON.stringify(votes[p])));
+    saveTimeout = setTimeout(async () => {
+        try {
+            const body = {
+                message: `Update votes for ${currentPerson}`,
+                content: btoa(JSON.stringify(votes)),
+                branch: GITHUB_BRANCH
+            };
+            if (shaMap[currentPerson]) body.sha = shaMap[currentPerson];
+            
+            const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/votes/${currentPerson}.json`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            
+            if (res.ok) {
+                const data = await res.json();
+                shaMap[currentPerson] = data.content.sha;
+                document.getElementById('saveStatus').textContent = '✅ Saved!';
+                document.getElementById('saveStatus').className = 'save-status saved';
+            } else {
+                const err = await res.json();
+                console.error('Save failed:', err);
+                document.getElementById('saveStatus').textContent = '⚠️ Save failed — check console';
+                document.getElementById('saveStatus').className = 'save-status';
+            }
+        } catch(e) {
+            document.getElementById('saveStatus').textContent = '⚠️ Connection error';
+            document.getElementById('saveStatus').className = 'save-status';
         }
-    });
-    document.getElementById('shareLink').value = url.toString();
+    }, 1000);
 }
 
-function copyShareLink() {
-    const link = document.getElementById('shareLink');
-    link.select();
-    navigator.clipboard.writeText(link.value).then(() => {
-        const btn = document.querySelector('.copy-btn');
-        btn.textContent = '✓ Copied!';
-        setTimeout(() => btn.textContent = 'Copy Link', 2000);
-    });
-}
-
-// Init
-loadFromURL();
+init();
 </script>
-
 </body>
 </html>

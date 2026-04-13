@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Barcelona Results</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="config.js"></script>
+    <style>
+        :root {
+            --aaron: #4285f4;
+            --will: #34a853;
+            --matt: #ea4335;
+            --sunset1: #ff6b35;
+            --sunset2: #f7931e;
+            --sunset3: #ffd23f;
+            --charcoal: #1a1a2e;
+            --bg: #0f0f1a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #e0e0e0;
+            background: var(--bg);
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--sunset1), var(--sunset2), var(--sunset3));
+            padding: 2rem 1.5rem;
+            text-align: center;
+        }
+        .header h1 { font-size: 2rem; font-weight: 900; color: var(--charcoal); }
+        .header p { font-size: 0.9rem; color: rgba(26,26,46,0.7); }
+        .loading {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+            font-size: 1.1rem;
+        }
+        .loading .spinner {
+            display: inline-block;
+            width: 30px; height: 30px;
+            border: 3px solid #333;
+            border-top-color: var(--sunset2);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .results-wrap {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .summary-card {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 1rem;
+            text-align: center;
+            border: 2px solid #2a2a4a;
+        }
+        .summary-card .name { font-weight: 800; font-size: 1rem; margin-bottom: 0.25rem; }
+        .summary-card .count { font-size: 2rem; font-weight: 900; }
+        .summary-card .label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+        .summary-card.aaron .name, .summary-card.aaron .count { color: var(--aaron); }
+        .summary-card.will .name, .summary-card.will .count { color: var(--will); }
+        .summary-card.matt .name, .summary-card.matt .count { color: var(--matt); }
+
+        .results-table-wrap {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid #2a2a4a;
+            background: #1a1a2e;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .results-table th {
+            padding: 0.75rem 0.6rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-bottom: 2px solid #2a2a4a;
+            position: sticky;
+            top: 0;
+            background: #1a1a2e;
+        }
+        .results-table th:first-child { text-align: left; }
+        .results-table th.aaron { color: var(--aaron); }
+        .results-table th.will { color: var(--will); }
+        .results-table th.matt { color: var(--matt); }
+        .results-table th.score { color: var(--sunset3); }
+        .results-table td {
+            padding: 0.6rem;
+            text-align: center;
+            border-bottom: 1px solid #222;
+        }
+        .results-table td:first-child { text-align: left; font-weight: 600; color: #ccc; max-width: 180px; }
+        .results-table tr:last-child td { border-bottom: none; }
+        .vote-love { font-size: 1.1rem; }
+        .vote-ok { font-size: 1.1rem; }
+        .vote-nah { font-size: 1.1rem; }
+        .vote-empty { color: #333; font-size: 0.85rem; }
+        .score-cell { font-weight: 800; font-size: 1rem; }
+        .score-high { color: var(--will); }
+        .score-mid { color: var(--sunset2); }
+        .score-low { color: var(--matt); }
+        .score-zero { color: #555; }
+        .cat-row td {
+            background: #151525;
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--sunset3);
+            padding: 0.5rem 0.6rem;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            background: var(--sunset1);
+            color: var(--charcoal);
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+        .back-link:hover { transform: scale(1.05); }
+        .error-msg {
+            text-align: center;
+            padding: 2rem;
+            color: var(--matt);
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>📊 Vote Results</h1>
+    <p>Barcelona Birthday — who wants what?</p>
+</div>
+
+<div id="content" class="results-wrap">
+    <div class="loading">
+        <div class="spinner"></div>
+        <div>Loading votes from GitHub...</div>
+    </div>
+</div>
+
+<script>
+const PERSONS = ['aaron', 'will', 'matt'];
+const PERSON_COLORS = { aaron: '#4285f4', will: '#34a853', matt: '#ea4335' };
+
+const ALL_ITEMS = [
+    { id:'sagrada', name:'La Sagrada Família', cat:'sights' },
+    { id:'parkguell', name:'Park Güell', cat:'sights' },
+    { id:'casabatllo', name:'Casa Batlló', cat:'sights' },
+    { id:'casamila', name:'Casa Milà', cat:'sights' },
+    { id:'gothic', name:'Gothic Quarter', cat:'sights' },
+    { id:'lasramblas', name:'La Rambla', cat:'sights' },
+    { id:'boqueria', name:'Mercat de la Boqueria', cat:'sights' },
+    { id:'montjuic', name:'Montjuïc', cat:'sights' },
+    { id:'picasso', name:'Picasso Museum', cat:'sights' },
+    { id:'campnou', name:'Camp Nou Experience', cat:'activities' },
+    { id:'flamenco', name:'Flamenco Show', cat:'activities' },
+    { id:'bikes', name:'Bike Tour', cat:'activities' },
+    { id:'cooking', name:'Cooking Class', cat:'activities' },
+    { id:'cablecar', name:'Port Cable Car', cat:'activities' },
+    { id:'aquarium', name:'L\'Aquàrium', cat:'activities' },
+    { id:'escape', name:'Escape Room', cat:'activities' },
+    { id:'smokehouse', name:'Smoked BBQ', cat:'food' },
+    { id:'steakhouse', name:'Steakhouse', cat:'food' },
+    { id:'ramen', name:'Ramen / Japanese', cat:'food' },
+    { id:'dimsum', name:'Dim Sum / Chinese', cat:'food' },
+    { id:'tapas', name:'Tapas Crawl', cat:'food' },
+    { id:'paella', name:'Authentic Paella', cat:'food' },
+    { id:'pinxtos', name:'Pintxos Night', cat:'food' },
+    { id:'churros', name:'Churros & Chocolate', cat:'food' },
+    { id:'barceloneta', name:'Barceloneta Beach', cat:'beach' },
+    { id:'bogatell', name:'Bogatell Beach', cat:'beach' },
+];
+
+const CAT_ORDER = ['sights', 'activities', 'food', 'beach'];
+const CAT_LABELS = { sights: '🏛️ Sights', activities: '🎯 Activities', food: '🍽️ Food', beach: '🏖️ Beach' };
+
+async function loadVotes() {
+    const allVotes = {};
+    let loaded = 0;
+
+    for (const person of PERSONS) {
+        try {
+            const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/votes/${person}.json?ref=${GITHUB_BRANCH}`, {
+                headers: { 'Accept': 'application/vnd.github.raw+json' }
+            });
+            if (res.ok) {
+                allVotes[person] = await res.json();
+            } else {
+                allVotes[person] = {};
+            }
+        } catch(e) {
+            allVotes[person] = {};
+        }
+        loaded++;
+    }
+
+    // Also check for any custom items in each person's votes
+    const allItemIds = new Set(ALL_ITEMS.map(i => i.id));
+    for (const person of PERSONS) {
+        for (const key of Object.keys(allVotes[person])) {
+            if (!allItemIds.has(key)) {
+                ALL_ITEMS.push({ id: key, name: key.replace(/^custom_/, '').replace(/_\d+$/, '').replace(/_/g, ' '), cat: 'activities' });
+                allItemIds.add(key);
+            }
+        }
+    }
+
+    renderResults(allVotes);
+}
+
+function scoreVote(v) {
+    if (v === 'love') return 2;
+    if (v === 'ok') return 1;
+    if (v === 'nah') return -1;
+    return 0;
+}
+
+function renderResults(allVotes) {
+    const container = document.getElementById('content');
+
+    // Summary cards
+    let summaryHtml = '<div class="summary-cards">';
+    for (const person of PERSONS) {
+        const v = allVotes[person] || {};
+        const loves = Object.values(v).filter(x => x === 'love').length;
+        summaryHtml += `
+        <div class="summary-card ${person}">
+            <div class="name">${person.charAt(0).toUpperCase() + person.slice(1)}</div>
+            <div class="count">${loves}</div>
+            <div class="label">Must-dos</div>
+        </div>`;
+    }
+    summaryHtml += '</div>';
+
+    // Build table grouped by category
+    let tableHtml = '<div class="results-table-wrap"><table class="results-table"><thead><tr>';
+    tableHtml += '<th>Activity</th>';
+    for (const person of PERSONS) {
+        tableHtml += `<th class="${person}">${person.charAt(0).toUpperCase() + person.slice(1)}</th>`;
+    }
+    tableHtml += '<th class="score">Score</th></tr></thead><tbody>';
+
+    for (const cat of CAT_ORDER) {
+        const catItems = ALL_ITEMS.filter(i => i.cat === cat);
+        if (!catItems.length) continue;
+
+        tableHtml += `<tr class="cat-row"><td colspan="${PERSONS.length + 2}">${CAT_LABELS[cat]}</td></tr>`;
+
+        // Score and sort within category
+        const scored = catItems.map(item => {
+            let score = 0;
+            const row = {};
+            for (const person of PERSONS) {
+                const v = (allVotes[person] || {})[item.id] || '';
+                row[person] = v;
+                score += scoreVote(v);
+            }
+            return { ...item, score, row };
+        }).sort((a, b) => b.score - a.score);
+
+        for (const item of scored) {
+            tableHtml += '<tr>';
+            tableHtml += `<td>${item.name}</td>`;
+            for (const person of PERSONS) {
+                const v = item.row[person];
+                if (v === 'love') tableHtml += '<td class="vote-love">❤️</td>';
+                else if (v === 'ok') tableHtml += '<td class="vote-ok">🤷</td>';
+                else if (v === 'nah') tableHtml += '<td class="vote-nah">👎</td>';
+                else tableHtml += '<td class="vote-empty">—</td>';
+            }
+            const sc = item.score;
+            const scClass = sc >= 4 ? 'score-high' : sc >= 1 ? 'score-mid' : sc < 0 ? 'score-low' : 'score-zero';
+            tableHtml += `<td class="score-cell ${scClass}">${sc > 0 ? '+' : ''}${sc}</td>`;
+            tableHtml += '</tr>';
+        }
+    }
+
+    tableHtml += '</tbody></table></div>';
+    tableHtml += `<div style="text-align:center"><a href="index.html" class="back-link">← Back to Voting</a></div>`;
+
+    container.innerHTML = summaryHtml + tableHtml;
+}
+
+loadVotes();
+</script>
+</body>
+</html>
