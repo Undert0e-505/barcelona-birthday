@@ -2,7 +2,7 @@
 
 A private voting website for a surprise 50th birthday trip to Barcelona. Three people (Aaron, Will, Matt) each vote on activities they'd like to do, and the results page shows everyone's preferences side-by-side.
 
-**Live site**: https://undert0e-505.github.io/barcelona-birthday/?v=srka38td (requires voter code)
+**Live site**: https://undert0e-505.github.io/barcelona-birthday/showcase.html
 
 ## How It Works
 
