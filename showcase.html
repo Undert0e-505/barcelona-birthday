@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎂 Barcelona Birthday Planner — Showcase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sunset1: #ff6b35;
+            --sunset2: #f7931e;
+            --sunset3: #ffd23f;
+            --charcoal: #1a1a2e;
+            --bg: #0f0f1a;
+            --card-bg: #1a1a2e;
+            --card-border: #2a2a4a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #e0e0e0;
+            background: var(--bg);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--sunset1), var(--sunset2), var(--sunset3));
+            padding: 2rem 1.5rem 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header h1 { font-size: 2rem; font-weight: 900; color: var(--charcoal); text-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative; z-index: 2; }
+        .header .subtitle { font-size: 0.95rem; color: rgba(26,26,46,0.7); font-weight: 500; position: relative; z-index: 2; }
+        .header .badge { display: inline-block; background: var(--charcoal); color: var(--sunset3); padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem; position: relative; z-index: 2; }
+
+        .carousel { position: relative; height: 180px; overflow: hidden; background: #000; }
+        .carousel-track { display: flex; height: 100%; transition: transform 0.8s ease-in-out; }
+        .carousel-track img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; }
+        .carousel::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(transparent, var(--bg)); }
+
+        .showcase-note { max-width: 500px; margin: 1rem auto; padding: 0 1rem; text-align: center; font-size: 0.85rem; color: #888; }
+
+        .nav-bar { max-width: 500px; margin: 1.25rem auto 0.75rem; padding: 0 1rem; display: flex; gap: 0.4rem; overflow-x: auto; scrollbar-width: none; }
+        .nav-bar::-webkit-scrollbar { display: none; }
+        .nav-btn { padding: 0.45rem 0.9rem; border-radius: 20px; border: none; background: var(--card-bg); color: #aaa; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: inherit; }
+        .nav-btn:hover { color: white; }
+        .nav-btn.active { background: var(--sunset1); color: white; }
+
+        .container { max-width: 500px; margin: 0 auto; padding: 0 1rem 2rem; }
+        .cat-header { font-size: 1rem; font-weight: 800; color: var(--sunset3); margin: 1.5rem 0 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .item-card { background: var(--card-bg); border-radius: 16px; overflow: hidden; margin-bottom: 0.75rem; border: 1px solid var(--card-border); transition: transform 0.2s, box-shadow 0.2s; }
+        .item-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+        .item-thumb { width: 100%; height: 140px; object-fit: cover; display: block; }
+        .item-body { padding: 0.75rem 1rem; }
+        .item-name { font-weight: 700; font-size: 1rem; color: white; margin-bottom: 0.15rem; }
+        .item-desc { font-size: 0.78rem; color: #999; line-height: 1.4; margin-bottom: 0.5rem; }
+        .item-link { display: inline-block; color: var(--sunset2); font-size: 0.75rem; font-weight: 600; text-decoration: none; margin-bottom: 0.75rem; }
+        .item-link:hover { color: var(--sunset3); }
+        .vote-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.4rem; }
+        .vote-btn { padding: 0.55rem; border-radius: 10px; border: 2px solid #222; background: transparent; font-size: 0.85rem; font-weight: 700; font-family: inherit; text-align: center; color: #444; cursor: not-allowed; opacity: 0.4; }
+
+        .tech-note { max-width: 500px; margin: 2rem auto; padding: 1.5rem; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--card-border); }
+        .tech-note h3 { color: var(--sunset2); font-size: 0.95rem; margin-bottom: 0.5rem; }
+        .tech-note p { font-size: 0.8rem; color: #888; line-height: 1.5; }
+        .tech-note a { color: var(--sunset2); }
+
+        @media (min-width: 768px) {
+            .header { padding: 2.5rem 2rem 1.25rem; }
+            .header h1 { font-size: 2.75rem; }
+            .carousel { height: 300px; }
+            .nav-bar, .container, .showcase-note, .tech-note { max-width: 960px; }
+            .nav-bar { flex-wrap: wrap; justify-content: center; overflow-x: visible; gap: 0.5rem; }
+            .nav-btn { padding: 0.5rem 1.1rem; font-size: 0.85rem; }
+            .container { display: grid; grid-template-columns: 1fr 1fr; column-gap: 1rem; row-gap: 0; align-items: start; }
+            .cat-header { grid-column: 1 / -1; font-size: 1.1rem; }
+            .item-card { margin-bottom: 1rem; }
+            .item-thumb { height: 160px; }
+        }
+
+        @media (min-width: 1200px) {
+            .header h1 { font-size: 3rem; }
+            .nav-bar, .container, .showcase-note, .tech-note { max-width: 1320px; }
+            .container { grid-template-columns: 1fr 1fr 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 { font-size: 1.5rem; }
+            .carousel { height: 140px; }
+            .item-thumb { height: 110px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🇪🇸 Barcelona Birthday</h1>
+    <p class="subtitle">A surprise trip planner with live voting</p>
+    <div class="badge">👀 Showcase — Voting Disabled</div>
+</div>
+
+<div class="carousel" id="carousel"></div>
+
+<p class="showcase-note">This is a demo view. Each voter gets a personal link to cast their votes. Voting buttons are disabled here.</p>
+
+<div class="nav-bar" id="navBar">
+    <button class="nav-btn active" data-cat="all">🔥 All</button>
+    <button class="nav-btn" data-cat="sights">🏛️ Sights</button>
+    <button class="nav-btn" data-cat="activities">🎯 Activities</button>
+    <button class="nav-btn" data-cat="food">🍽️ Food</button>
+    <button class="nav-btn" data-cat="beach">🏖️ Beach</button>
+</div>
+
+<div class="container" id="itemsList"></div>
+
+<div class="tech-note">
+    <h3>⚙️ How It Works</h3>
+    <p>Built as a single-page app with no framework. Votes are stored in <a href="https://kvdb.io" target="_blank">KVdb.io</a> (free, CORS-friendly key-value store). Each person gets a unique URL with an unguessable code. Results show all three voters side-by-side. Deployed on <a href="https://pages.github.com" target="_blank">GitHub Pages</a> — push to main = live.</p>
+    <p style="margin-top:0.5rem;"><a href="https://github.com/Undert0e-505/barcelona-birthday" target="_blank" style="color:var(--sunset2);font-weight:600;">View source on GitHub →</a></p>
+</div>
+
+<script>
+const ITEMS = [
+    { id:'sagrada', name:'La Sagrada Família', desc:'Gaudí\'s jaw-dropping unfinished cathedral. Book ahead or you\'ll be queuing for hours.', cat:'sights', img:'img/sagrada.jpg', link:'https://maps.google.com/?q=Sagrada+Familia+Barcelona' },
+    { id:'parkguell', name:'Park Güell', desc:'Gaudí\'s rainbow mosaic park overlooking the whole city. The gingerbread houses at the entrance are iconic.', cat:'sights', img:'img/parkguell.jpg', link:'https://maps.google.com/?q=Park+Guell+Barcelona' },
+    { id:'casabatllo', name:'Casa Batlló', desc:'Dragon-roofed building on Passeig de Gràcia. The inside is absolutely mental.', cat:'sights', img:'img/casabatllo.jpg', link:'https://maps.google.com/?q=Casa+Batllo+Barcelona' },
+    { id:'casamila', name:'Casa Milà (La Pedrera)', desc:'Wavy stone apartment block with an alien-looking rooftop. Night visits are especially cool.', cat:'sights', img:'img/casamila.jpg', link:'https://maps.google.com/?q=Casa+Mila+La+Pedrera+Barcelona' },
+    { id:'gothic', name:'Gothic Quarter', desc:'Narrow medieval streets, hidden squares, Roman ruins, and Barcelona Cathedral. Get lost on purpose.', cat:'sights', img:'img/gothic.jpg', link:'https://maps.google.com/?q=Gothic+Quarter+Barcelona' },
+    { id:'lasramblas', name:'La Rambla', desc:'The famous boulevard — street performers, flower stalls, and way too many tourists. Still worth a walk.', cat:'sights', img:'img/lasramblas.jpg', link:'https://maps.google.com/?q=La+Rambla+Barcelona' },
+    { id:'boqueria', name:'Mercat de la Boqueria', desc:'Epic food market off La Rambla. Fresh juices, jamón, and tapas bars crammed together. Go hungry.', cat:'sights', img:'img/boqueria.jpg', link:'https://maps.google.com/?q=Mercat+de+la+Boqueria+Barcelona' },
+    { id:'montjuic', name:'Montjuïc', desc:'Hill with a castle, botanical gardens, Olympic stadium, and sick views. Take the cable car up.', cat:'sights', img:'img/montjuic.jpg', link:'https://maps.google.com/?q=Montjuic+Castle+Barcelona' },
+    { id:'picasso', name:'Picasso Museum', desc:'World\'s biggest collection of his early work in a medieval palace in El Born.', cat:'sights', img:'img/picasso.jpg', link:'https://maps.google.com/?q=Picasso+Museum+Barcelona' },
+    { id:'campnou', name:'Camp Nou Experience', desc:'FC Barcelona\'s stadium tour. Even if football\'s not your thing, it\'s absolutely massive.', cat:'activities', img:'img/campnou.jpg', link:'https://maps.google.com/?q=Camp+Nou+Barcelona' },
+    { id:'flamenco', name:'Flamenco Show', desc:'Intense, passionate, loud. Proper Spanish flamenco in a small tablao — way better than the big tourist shows.', cat:'activities', img:'img/flamenco.jpg', link:'https://maps.google.com/?q=Flamenco+Show+Barcelona' },
+    { id:'bikes', name:'Bike Tour', desc:'Cycling through the Gothic Quarter, along the beach, and past all the Gaudí buildings. Fun way to get orientated.', cat:'activities', img:'img/bikes.jpg', link:'https://maps.google.com/?q=Barcelona+Bike+Tours' },
+    { id:'cooking', name:'Cooking Class', desc:'Learn to make paella and tapas with a local chef, then eat what you made. Competitive cooking?', cat:'activities', img:'img/cooking.jpg', link:'https://maps.google.com/?q=Paella+Cooking+Class+Barcelona' },
+    { id:'cablecar', name:'Port Cable Car', desc:'Ride from Barceloneta to Montjuïc hanging over the harbour. Great photos.', cat:'activities', img:'img/cablecar.jpg', link:'https://maps.google.com/?q=Teleferic+del+Port+Barcelona' },
+    { id:'segway', name:'Segway Tour', desc:'Glide through the city like a weird futuristic tourist. Surprisingly fun and covers a lot of ground fast.', cat:'activities', img:'img/segway.jpg', link:'https://www.barcelonasegwaytour.com/' },
+    { id:'aquarium', name:'L\'Aquàrium', desc:'Sharks, rays, and an 80m underwater tunnel. Decent way to escape the midday heat.', cat:'activities', img:'img/aquarium.jpg', link:'https://maps.google.com/?q=L+Aquarium+Barcelona' },
+    { id:'escape', name:'Escape Room', desc:'Barcelona-themed puzzles. Could be a laugh — especially if we race each other.', cat:'activities', img:'img/escape.jpg', link:'https://maps.google.com/?q=Escape+Room+Barcelona' },
+    { id:'smokehouse', name:'Smoked BBQ — Brisket & Beer', desc:'Low and slow Texas-style smoked meats. Craft beer on the side. A proper feast.', cat:'food', img:'img/smokehouse.jpg', link:'https://maps.google.com/?q=BBQ+Restaurant+Barcelona' },
+    { id:'steakhouse', name:'Proper Steakhouse', desc:'Dry-aged, charcoal-grilled, the works. Find a good one and go large.', cat:'food', img:'img/steakhouse.jpg', link:'https://maps.google.com/?q=Steak+Restaurant+Barcelona' },
+    { id:'ramen', name:'Ramen / Japanese', desc:'Big bowls of tonkotsu ramen, gyoza, and maybe some karaage chicken.', cat:'food', img:'img/ramen.jpg', link:'https://maps.google.com/?q=Ramen+Restaurant+Barcelona' },
+    { id:'dimsum', name:'Dim Sum / Chinese', desc:'Dumplings, bao, char siu, and everything steamed. Comfort food.', cat:'food', img:'img/dimsum.jpg', link:'https://maps.google.com/?q=Dim+Sum+Chinese+Restaurant+Barcelona' },
+    { id:'tapas', name:'Tapas Crawl', desc:'Bar-hop through the Gothic Quarter. Patatas bravas, croquetas, jamón, and cava at every stop.', cat:'food', img:'img/tapas.jpg', link:'https://maps.google.com/?q=Tapas+Bar+El+Born+Barcelona' },
+    { id:'paella', name:'Authentic Paella', desc:'Proper Valencian paella by the beach — not the tourist trap version. Seafood or mixed.', cat:'food', img:'img/paella.jpg', link:'https://maps.google.com/?q=Authentic+Paella+Restaurant+Barceloneta' },
+    { id:'pinxtos', name:'Pintxos Night', desc:'Basque-style bar snacks on sticks — grab what you want, pay by the stick. Fun and chaotic.', cat:'food', img:'img/pintxos.jpg', link:'https://maps.google.com/?q=Pintxos+Bar+Barcelona' },
+    { id:'churros', name:'Churros & Chocolate', desc:'Thick hot chocolate you can stand a spoon in, with fresh churros for dipping. Legendary.', cat:'food', img:'img/churros.jpg', link:'https://maps.google.com/?q=Granja+Viader+Barcelona+Churros+Chocolate' },
+    { id:'barceloneta', name:'Barceloneta Beach Day', desc:'Sun, sea, sand, and seafood shacks along the promenade. Classic Barcelona beach day.', cat:'beach', img:'img/barceloneta.jpg', link:'https://maps.google.com/?q=Barceloneta+Beach+Barcelona' },
+    { id:'bogatell', name:'Bogatell Beach', desc:'Quieter than Barceloneta. More locals, less touristy, still great facilities.', cat:'beach', img:'img/bogatell.jpg', link:'https://maps.google.com/?q=Bogatell+Beach+Barcelona' },
+];
+
+const CAROUSEL_IMGS = ['img/sagrada.jpg','img/parkguell.jpg','img/casabatllo.jpg','img/gothic.jpg','img/barceloneta.jpg','img/boqueria.jpg'];
+
+let currentCategory = 'all';
+
+// Carousel
+function setupCarousel() {
+    const container = document.getElementById('carousel');
+    const track = document.createElement('div');
+    track.className = 'carousel-track';
+    CAROUSEL_IMGS.forEach(src => { const img = document.createElement('img'); img.src = src; img.alt = 'Barcelona'; img.loading = 'lazy'; track.appendChild(img); });
+    const clone = track.children[0].cloneNode(true);
+    track.appendChild(clone);
+    container.appendChild(track);
+    let idx = 0;
+    const total = CAROUSEL_IMGS.length;
+    setInterval(() => {
+        idx++;
+        track.style.transform = `translateX(-${idx * 100}%)`;
+        if (idx === total) {
+            setTimeout(() => { track.style.transition = 'none'; track.style.transform = 'translateX(0)'; idx = 0; requestAnimationFrame(() => requestAnimationFrame(() => { track.style.transition = 'transform 0.8s ease-in-out'; })); }, 850);
+        }
+    }, 2000);
+}
+
+// Nav
+document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        currentCategory = btn.dataset.cat;
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderItems();
+    });
+});
+
+// Render
+function renderItems() {
+    const filtered = currentCategory === 'all' ? ITEMS : ITEMS.filter(i => i.cat === currentCategory);
+    const cats = currentCategory === 'all' ? ['sights','activities','food','beach'] : [currentCategory];
+    const catLabels = { sights:'🏛️ Sights & Landmarks', activities:'🎯 Activities & Experiences', food:'🍽️ Food & Drink', beach:'🏖️ Beach' };
+    let html = '';
+    cats.forEach(cat => {
+        const catItems = filtered.filter(i => i.cat === cat);
+        if (!catItems.length) return;
+        html += `<div class="cat-header">${catLabels[cat]}</div>`;
+        catItems.forEach(item => {
+            html += `
+            <div class="item-card">
+                <a href="${item.link}" target="_blank" rel="noopener"><img class="item-thumb" src="${item.img}" alt="${item.name}" loading="lazy" onerror="this.style.display='none'"></a>
+                <div class="item-body">
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-desc">${item.desc}</div>
+                    <a class="item-link" href="${item.link}" target="_blank" rel="noopener">More info →</a>
+                    <div class="vote-row">
+                        <div class="vote-btn love">❤️ Must</div>
+                        <div class="vote-btn ok">🤷 Maybe</div>
+                        <div class="vote-btn nah">👎 Nah</div>
+                    </div>
+                </div>
+            </div>`;
+        });
+    });
+    document.getElementById('itemsList').innerHTML = html;
+}
+
+setupCarousel();
+renderItems();
+</script>
+</body>
+</html>
