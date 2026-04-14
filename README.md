@@ -41,7 +41,7 @@ Free, CORS-friendly key-value store. No auth required.
 | Person | Bucket ID |
 |--------|-----------|
 | Aaron | `2tZBHj94Jcbys5VGTxTCJ8` |
-| Will | `Yc5oQyXz3R5MZyecbVLP7D` |
+| Will | `6Vtn3PxJJXZyMMEyAwBd72` |
 | Matt | `QekwxQHq5uJfqVonojJUrc` |
 
 Each bucket stores a single key `/votes` containing a JSON object like:
@@ -137,7 +137,7 @@ GitHub Pages auto-deploys from the `main` branch. Push = live within 1-2 minutes
 
 ```bash
 echo "Aaron:"; curl -s https://kvdb.io/2tZBHj94Jcbys5VGTxTCJ8/votes
-echo "Will:"; curl -s https://kvdb.io/Yc5oQyXz3R5MZyecbVLP7D/votes
+echo "Will:"; curl -s https://kvdb.io/6Vtn3PxJJXZyMMEyAwBd72/votes
 echo "Matt:"; curl -s https://kvdb.io/QekwxQHq5uJfqVonojJUrc/votes
 ```
 
@@ -153,7 +153,7 @@ These backends have CORS issues (browser blocks PUT requests):
 # Clear Aaron's votes
 curl -X PUT -H "Content-Type: application/json" -d '{}' https://kvdb.io/2tZBHj94Jcbys5VGTxTCJ8/votes
 # Clear Will's votes
-curl -X PUT -H "Content-Type: application/json" -d '{}' https://kvdb.io/Yc5oQyXz3R5MZyecbVLP7D/votes
+curl -X PUT -H "Content-Type: application/json" -d '{}' https://kvdb.io/6Vtn3PxJJXZyMMEyAwBd72/votes
 # Clear Matt's votes
 curl -X PUT -H "Content-Type: application/json" -d '{}' https://kvdb.io/QekwxQHq5uJfqVonojJUrc/votes
 ```
