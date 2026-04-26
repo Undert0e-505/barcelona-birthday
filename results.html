@@ -11,6 +11,7 @@
             --aaron: #4285f4;
             --will: #34a853;
             --matt: #ea4335;
+            --aileen: #ab47bc;
             --sunset1: #ff6b35;
             --sunset2: #f7931e;
             --sunset3: #ffd23f;
@@ -54,7 +55,7 @@
         }
         .summary-cards {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 0.75rem;
             margin-bottom: 1.5rem;
         }
@@ -71,6 +72,7 @@
         .summary-card.aaron .name, .summary-card.aaron .count { color: var(--aaron); }
         .summary-card.will .name, .summary-card.will .count { color: var(--will); }
         .summary-card.matt .name, .summary-card.matt .count { color: var(--matt); }
+        .summary-card.aileen .name, .summary-card.aileen .count { color: var(--aileen); }
 
         .results-table-wrap {
             overflow-x: auto;
@@ -99,6 +101,7 @@
         .results-table th.aaron { color: var(--aaron); }
         .results-table th.will { color: var(--will); }
         .results-table th.matt { color: var(--matt); }
+        .results-table th.aileen { color: var(--aileen); }
         .results-table th.score { color: var(--sunset3); }
         .results-table td {
             padding: 0.6rem;
@@ -179,13 +182,14 @@
 </div>
 
 <script>
-const PERSONS = ['aaron', 'will', 'matt'];
+const PERSONS = ['aaron', 'will', 'matt', 'aileen'];
 
 // ?v= code → person name (same mapping as index.html)
 const VOTER_CODES = {
     srka38td: 'aaron',
     d1tifg18: 'will',
-    ntrmfid2: 'matt'
+    ntrmfid2: 'matt',
+    uarrgr1k: 'aileen'
 };
 
 const KVDB_BASE = 'https://kvdb.io';
@@ -193,7 +197,8 @@ const KVDB_BASE = 'https://kvdb.io';
 const BIN_IDS = {
     srka38td: '2tZBHj94Jcbys5VGTxTCJ8',
     d1tifg18: '6Vtn3PxJJXZyMMEyAwBd72',
-    ntrmfid2: 'QekwxQHq5uJfqVonojJUrc'
+    ntrmfid2: 'QekwxQHq5uJfqVonojJUrc',
+    uarrgr1k: 'QL5W5GuQv2C5VazZnx5kKy'
 };
 
 const ALL_ITEMS = [
