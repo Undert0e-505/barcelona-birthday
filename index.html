@@ -192,6 +192,18 @@
         }
         .item-body { padding: 0.75rem 1rem; }
         .item-name { font-weight: 700; font-size: 1rem; color: white; margin-bottom: 0.15rem; }
+        .suggested-by {
+            display: inline-block;
+            background: linear-gradient(135deg, #ab47bc, #7b1fa2);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 20px;
+            margin-left: 0.4rem;
+            vertical-align: middle;
+            letter-spacing: 0.02em;
+        }
         .item-desc { font-size: 0.78rem; color: #999; line-height: 1.4; margin-bottom: 0.5rem; }
         .item-link {
             display: inline-block;
@@ -415,6 +427,8 @@ const ITEMS = [
     { id:'montjuic', name:'Montjuïc', desc:'Hill with a castle, botanical gardens, Olympic stadium, and sick views. Take the cable car up.', cat:'sights', img:'img/montjuic.jpg', link:'https://maps.google.com/?q=Montjuic+Castle+Barcelona' },
     { id:'picasso', name:'Picasso Museum', desc:'World\'s biggest collection of his early work in a medieval palace in El Born.', cat:'sights', img:'img/picasso.jpg', link:'https://maps.google.com/?q=Picasso+Museum+Barcelona' },
     { id:'bunkers', name:'Bunkers del Carmel', desc:'360° panoramic views of the entire city from a hilltop civil war bunker. Best sunset in Barcelona — bring beers.', cat:'sights', img:'img/bunkers.jpg', link:'https://maps.google.com/?q=Bunkers+del+Carmel+Barcelona' },
+    { id:'ciutadella', name:'Parc de la Ciutadella <span class="suggested-by">💡 Suggested by Aileen</span>', desc:'Lush green oasis in the city centre — boating lake, cascading fountain, and the mammoth sculpture. Perfect picnic spot.', cat:'sights', img:'img/ciutadella.jpg', link:'https://maps.google.com/?q=Parc+de+la+Ciutadella+Barcelona' },
+    { id:'magicfountain', name:'Magic Fountain <span class="suggested-by">💡 Suggested by Aileen</span>', desc:'Spectacular light-and-water show at Montjuïc. Free, night-time, and surprisingly breathtaking. Check showtimes!', cat:'sights', img:'img/magicfountain.jpg', link:'https://maps.google.com/?q=Magic+Fountain+of+Montjuic+Barcelona' },
     { id:'cablecar', name:'Port Cable Car', desc:'Ride from Barceloneta to Montjuïc hanging over the harbour. Great photos.', cat:'activities', img:'img/cablecar.jpg', link:'https://maps.google.com/?q=Teleferic+del+Port+Barcelona' },
     { id:'kayak', name:'Kayaking / Paddleboarding', desc:'Sea kayaking or SUP along the Barceloneta coast. Different way to see the city — from the water.', cat:'activities', img:'img/kayak.jpg', link:'https://maps.google.com/?q=Kayaking+Barceloneta+Barcelona' },
     { id:'winetasting', name:'Wine & Cava Tasting', desc:'Catalan wines and cava in a proper bodega. Learn what makes Priorat and Penedès special.', cat:'activities', img:'img/winetasting.jpg', link:'https://maps.google.com/?q=Wine+Tasting+Barcelona+El+Born' },

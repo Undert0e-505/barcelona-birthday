@@ -102,6 +102,18 @@
         .results-table th.will { color: var(--will); }
         .results-table th.matt { color: var(--matt); }
         .results-table th.aileen { color: var(--aileen); }
+        .suggested-by {
+            display: inline-block;
+            background: linear-gradient(135deg, #ab47bc, #7b1fa2);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            border-radius: 20px;
+            margin-left: 0.3rem;
+            vertical-align: middle;
+            letter-spacing: 0.02em;
+        }
         .results-table th.score { color: var(--sunset3); }
         .results-table td {
             padding: 0.6rem;
@@ -207,6 +219,8 @@ const ALL_ITEMS = [
     { id:'laberint', name:'Parc del Laberint d\'Horta', cat:'sights' },
     { id:'santpau', name:'Hospital de Sant Pau', cat:'sights' },
     { id:'bunkers', name:'Bunkers del Carmel', cat:'sights' },
+    { id:'ciutadella', name:'Parc de la Ciutadella <span class="suggested-by">💡 Aileen</span>', cat:'sights' },
+    { id:'magicfountain', name:'Magic Fountain <span class="suggested-by">💡 Aileen</span>', cat:'sights' },
     { id:'gothic', name:'Gothic Quarter', cat:'sights' },
     { id:'lasramblas', name:'La Rambla', cat:'sights' },
     { id:'boqueria', name:'Mercat de la Boqueria', cat:'sights' },
