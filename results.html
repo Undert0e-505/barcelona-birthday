@@ -121,6 +121,8 @@
             border-bottom: 1px solid #222;
         }
         .results-table td:first-child { text-align: left; font-weight: 600; color: #ccc; max-width: 180px; }
+        .results-table td:first-child a { color: #ccc; text-decoration: none; }
+        .results-table td:first-child a:hover { color: var(--sunset2); text-decoration: underline; }
         .results-table tr:last-child td { border-bottom: none; }
         .vote-love { font-size: 1.1rem; }
         .vote-ok { font-size: 1.1rem; }
@@ -214,33 +216,33 @@ const BIN_IDS = {
 };
 
 const ALL_ITEMS = [
-    { id:'sagrada', name:'La Sagrada Família', cat:'sights' },
-    { id:'parkguell', name:'Park Güell', cat:'sights' },
-    { id:'laberint', name:'Parc del Laberint d\'Horta', cat:'sights' },
-    { id:'santpau', name:'Hospital de Sant Pau', cat:'sights' },
-    { id:'bunkers', name:'Bunkers del Carmel', cat:'sights' },
-    { id:'ciutadella', name:'Parc de la Ciutadella <span class="suggested-by">💡 Aileen</span>', cat:'sights' },
-    { id:'magicfountain', name:'Magic Fountain <span class="suggested-by">💡 Aileen</span>', cat:'sights' },
-    { id:'gothic', name:'Gothic Quarter', cat:'sights' },
-    { id:'lasramblas', name:'La Rambla', cat:'sights' },
-    { id:'boqueria', name:'Mercat de la Boqueria', cat:'sights' },
-    { id:'montjuic', name:'Montjuïc', cat:'sights' },
-    { id:'picasso', name:'Picasso Museum', cat:'sights' },
-    { id:'kayak', name:'Kayaking / Paddleboarding', cat:'activities' },
-    { id:'winetasting', name:'Wine & Cava Tasting', cat:'activities' },
-    { id:'tibidabo', name:'Tibidabo Amusement Park', cat:'activities' },
-    { id:'rooftop', name:'Rooftop Bar Night', cat:'activities' },
-    { id:'cablecar', name:'Port Cable Car', cat:'activities' },
-    { id:'smokehouse', name:'Smoked BBQ', cat:'food' },
-    { id:'steakhouse', name:'Steakhouse', cat:'food' },
-    { id:'ramen', name:'Ramen / Japanese', cat:'food' },
-    { id:'pizza', name:'Italian / Neapolitan Pizza', cat:'food' },
-    { id:'santacaterina', name:'Mercat de Santa Caterina', cat:'food' },
-    { id:'paella', name:'Authentic Paella', cat:'food' },
-    { id:'pinxtos', name:'Pintxos Night', cat:'food' },
-    { id:'churros', name:'Churros & Chocolate', cat:'food' },
-    { id:'barceloneta', name:'Barceloneta Beach', cat:'beach' },
-    { id:'bogatell', name:'Bogatell Beach', cat:'beach' },
+    { id:'sagrada', name:'La Sagrada Família', cat:'sights', link:'https://maps.google.com/?q=Sagrada+Familia+Barcelona' },
+    { id:'parkguell', name:'Park Güell', cat:'sights', link:'https://maps.google.com/?q=Park+Guell+Barcelona' },
+    { id:'laberint', name:'Parc del Laberint d\'Horta', cat:'sights', link:'https://maps.google.com/?q=Parc+del+Laberint+dHorta+Barcelona' },
+    { id:'santpau', name:'Hospital de Sant Pau', cat:'sights', link:'https://maps.google.com/?q=Hospital+de+Sant+Pau+Barcelona' },
+    { id:'bunkers', name:'Bunkers del Carmel', cat:'sights', link:'https://maps.google.com/?q=Bunkers+del+Carmel+Barcelona' },
+    { id:'ciutadella', name:'Parc de la Ciutadella <span class="suggested-by">💡 Aileen</span>', cat:'sights', link:'https://maps.google.com/?q=Parc+de+la+Ciutadella+Barcelona' },
+    { id:'magicfountain', name:'Magic Fountain <span class="suggested-by">💡 Aileen</span>', cat:'sights', link:'https://maps.google.com/?q=Magic+Fountain+of+Montjuic+Barcelona' },
+    { id:'gothic', name:'Gothic Quarter', cat:'sights', link:'https://maps.google.com/?q=Gothic+Quarter+Barcelona' },
+    { id:'lasramblas', name:'La Rambla', cat:'sights', link:'https://maps.google.com/?q=La+Rambla+Barcelona' },
+    { id:'boqueria', name:'Mercat de la Boqueria', cat:'sights', link:'https://maps.google.com/?q=Mercat+de+la+Boqueria+Barcelona' },
+    { id:'montjuic', name:'Montjuïc', cat:'sights', link:'https://maps.google.com/?q=Montjuic+Castle+Barcelona' },
+    { id:'picasso', name:'Picasso Museum', cat:'sights', link:'https://maps.google.com/?q=Picasso+Museum+Barcelona' },
+    { id:'kayak', name:'Kayaking / Paddleboarding', cat:'activities', link:'https://maps.google.com/?q=Kayaking+Barceloneta+Barcelona' },
+    { id:'winetasting', name:'Wine & Cava Tasting', cat:'activities', link:'https://maps.google.com/?q=Wine+Tasting+Barcelona+El+Born' },
+    { id:'tibidabo', name:'Tibidabo Amusement Park', cat:'activities', link:'https://maps.google.com/?q=Tibidabo+Amusement+Park+Barcelona' },
+    { id:'rooftop', name:'Rooftop Bar Night', cat:'activities', link:'https://maps.google.com/?q=Rooftop+Bar+Barcelona' },
+    { id:'cablecar', name:'Port Cable Car', cat:'activities', link:'https://maps.google.com/?q=Teleferic+del+Port+Barcelona' },
+    { id:'smokehouse', name:'Smoked BBQ', cat:'food', link:'https://maps.google.com/?q=BBQ+Restaurant+Barcelona' },
+    { id:'steakhouse', name:'Steakhouse', cat:'food', link:'https://maps.google.com/?q=Steak+Restaurant+Barcelona' },
+    { id:'ramen', name:'Ramen / Japanese', cat:'food', link:'https://maps.google.com/?q=Ramen+Restaurant+Barcelona' },
+    { id:'pizza', name:'Italian / Neapolitan Pizza', cat:'food', link:'https://maps.google.com/?q=Neapolitan+Pizza+El+Born+Barcelona' },
+    { id:'santacaterina', name:'Mercat de Santa Caterina', cat:'food', link:'https://maps.google.com/?q=Mercat+de+Santa+Caterina+Barcelona' },
+    { id:'paella', name:'Authentic Paella', cat:'food', link:'https://maps.google.com/?q=Authentic+Paella+Restaurant+Barceloneta' },
+    { id:'pinxtos', name:'Pintxos Night', cat:'food', link:'https://maps.google.com/?q=Pintxos+Bar+Barcelona' },
+    { id:'churros', name:'Churros & Chocolate', cat:'food', link:'https://maps.google.com/?q=Granja+Viader+Barcelona+Churros+Chocolate' },
+    { id:'barceloneta', name:'Barceloneta Beach', cat:'beach', link:'https://maps.google.com/?q=Barceloneta+Beach+Barcelona' },
+    { id:'bogatell', name:'Bogatell Beach', cat:'beach', link:'https://maps.google.com/?q=Bogatell+Beach+Barcelona' },
 ];
 
 const CAT_ORDER = ['sights', 'activities', 'food', 'beach'];
@@ -323,7 +325,7 @@ function renderResults(allVotes) {
 
         for (const item of scored) {
             tableHtml += '<tr>';
-            tableHtml += `<td>${item.name}</td>`;
+            tableHtml += `<td>${item.link ? '<a href="' + item.link + '" target="_blank" style="color:inherit;text-decoration:none;">' + item.name + '</a>' : item.name}</td>`;
             for (const person of PERSONS) {
                 const v = item.row[person];
                 if (v === 'love') tableHtml += '<td class="vote-love">❤️</td>';
